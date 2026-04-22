@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Schengen Visa Guidance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --navy: #0d1b2e; --navy2: #152540; --blue: #1a56db; --blue-hover: #1648c5;
+      --blue-soft: #e8f0ff; --blue-mid: #c7d9ff; --blue-text: #1a3d8f;
+      --teal: #0ea5a0; --gold: #f59e0b; --gold-soft: #fef3c7;
+      --green: #059669; --green-soft: #ecfdf5; --green-bdr: #a7f3d0;
+      --red: #dc2626; --red-soft: #fef2f2; --red-bdr: #fecaca;
+      --amber: #d97706; --amber-soft: #fffbeb; --amber-bdr: #fde68a;
+      --white: #ffffff; --bg: #f0f4fb; --surface: #f7f9fd; --card: #ffffff;
+      --line: #e2e8f4; --line2: #d0d9ed; --text: #0f2040; --text2: #3a4e6e;
+      --muted: #7588a3; --sidebar-w: 290px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Outfit', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+    /* ══ LANDING ══ */
+    #landingScreen {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #060e1c 0%, #0d1b2e 40%, #0f2448 70%, #152d5e 100%);
+      position: relative; overflow: hidden; display: flex; align-items: center;
+    }
+    #landingScreen::before {
+      content: ""; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .landing-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(26,86,219,0.18) 0%, transparent 70%); top: -100px; right: 200px; pointer-events: none; }
+    .landing-inner { width: min(1260px, calc(100% - 48px)); margin: 0 auto; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 60px; align-items: center; padding: 60px 0; position: relative; z-index: 2; }
+    .landing-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: rgba(26,86,219,0.25); border: 1px solid rgba(26,86,219,0.45); color: #7eb4ff; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px; }
+    .landing-h1 { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 4.5vw, 54px); color: #fff; line-height: 1.1; margin-bottom: 18px; }
+    .landing-h1 .gold-text { color: #f59e0b; font-style: italic; }
+    .landing-sub { font-size: 15px; color: rgba(255,255,255,0.62); line-height: 1.7; max-width: 500px; margin-bottom: 30px; }
+    .landing-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .landing-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 999px; }
+    .badge-icon { font-size: 14px; }
+    .form-card { background: #f8f5ef; border-radius: 20px; padding: 32px 30px; box-shadow: 0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08); }
+    .form-card-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: #0f2040; margin-bottom: 6px; line-height: 1.2; }
+    .form-card-sub { font-size: 13px; color: #7588a3; margin-bottom: 20px; line-height: 1.55; }
+    .progress-row { display: flex; align-items: center; gap: 7px; margin-bottom: 22px; }
+    .prog-dot { width: 10px; height: 10px; border-radius: 50%; background: #d5cfc4; transition: background 0.25s; }
+    .prog-dot.filled { background: #1a56db; }
+    .prog-label { font-size: 12px; color: #9aa5b4; font-weight: 500; margin-left: 4px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5a6a80; margin-bottom: 6px; }
+    .form-group label .req { color: #dc2626; margin-left: 2px; }
+    .form-select { width: 100%; appearance: none; -webkit-appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aa5b4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center; border: 1.5px solid #e2e4e8; border-radius: 10px; padding: 11px 36px 11px 13px; font-size: 13px; color: #0f2040; font-family: 'Outfit', sans-serif; cursor: pointer; transition: border-color 0.2s; }
+    .form-select:focus { outline: none; border-color: #1a56db; }
+    .form-select option[value=""] { color: #9aa5b4; }
+    .form-select.filled { border-color: #1a56db; background-color: #f0f6ff; }
+    .form-btn { width: 100%; padding: 14px 20px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 6px; }
+    .form-btn:disabled { background: #cfd4dc; color: #8a95a3; cursor: not-allowed; }
+    .form-btn:not(:disabled) { background: linear-gradient(135deg, #1a56db, #0ea5a0); color: #fff; box-shadow: 0 4px 20px rgba(26,86,219,0.4); }
+    .form-btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(26,86,219,0.5); }
+    .form-note { text-align: center; font-size: 11px; color: #9aa5b4; margin-top: 12px; }
+
+    /* ══ GUIDE ══ */
+    #guideContent { display: none; }
+    .hero { background: linear-gradient(135deg, #0d1b2e 0%, #1a3a6b 55%, #1a56db 100%); padding: 36px 0 80px; position: relative; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .hero-inner { width: min(1260px, calc(100% - 32px)); margin: 0 auto; position: relative; }
+    .hero-flag { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .flag-stripe { display: flex; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .flag-stripe span { width: 18px; height: 26px; display: block; }
+    .flag-stripe .f1 { background: #002395; } .flag-stripe .f2 { background: #EDEDED; } .flag-stripe .f3 { background: #ED2939; }
+    .hero-eyebrow { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); letter-spacing: 0.12em; text-transform: uppercase; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 46px); color: #fff; line-height: 1.1; margin-bottom: 10px; }
+    .hero h1 em { font-style: italic; color: #7eb4ff; }
+    .hero-sub { color: rgba(255,255,255,0.72); font-size: 15px; font-weight: 400; max-width: 560px; }
+    .hero-meta-row { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .hero-meta-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); padding: 4px 12px; border-radius: 999px; }
+
+    /* ══ METRICS STRIP ══ */
+    .metrics-strip { width: min(1260px, calc(100% - 32px)); margin: -38px auto 0; background: #fff; border-radius: 16px; border: 1px solid var(--line); display: grid; grid-template-columns: repeat(6, 1fr); overflow: hidden; box-shadow: 0 8px 32px rgba(15,32,64,0.10); position: relative; z-index: 10; }
+    .metric { padding: 16px 10px 14px; text-align: center; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric-ico { width: 34px; height: 34px; border-radius: 10px; margin: 0 auto 8px; display: grid; place-items: center; background: var(--blue-soft); font-size: 16px; }
+    .metric h4 { font-size: 13px; font-weight: 700; color: var(--text); margin: 0; }
+    .metric p { font-size: 11px; color: var(--muted); font-weight: 500; margin: 2px 0 0; }
+
+    /* ══ LAYOUT ══ */
+    .page { width: min(1260px, calc(100% - 32px)); margin: 20px auto 40px; display: grid; grid-template-columns: minmax(0, 1fr) var(--sidebar-w); gap: 16px; align-items: start; }
+    .main-panel { min-width: 0; }
+
+    /* ══ NAV TABS — ENHANCED VISIBILITY ══ */
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 6px; background: var(--navy); border: 1px solid #1a3a6b; border-radius: 14px; padding: 8px; margin-bottom: 14px; }
+    .nav-tab { border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.75); border-radius: 9px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.18s; white-space: nowrap; }
+    .nav-tab:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.35); }
+    .nav-tab.active { background: #fff; color: var(--navy); font-weight: 800; border-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+
+    /* ══ CARDS ══ */
+    .sec-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+    .sec-card + .sec-card { margin-top: 14px; }
+    .sec-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #f8faff 0%, #fff 100%); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); background: var(--blue-soft); border: 1px solid var(--blue-mid); padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+    .sec-head h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 6px; line-height: 1.2; }
+    .sec-head p { font-size: 13px; color: var(--muted); line-height: 1.65; max-width: 680px; }
+    .sec-body { padding: 20px 22px; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stack { display: grid; gap: 14px; }
+    .callout { border-radius: 12px; padding: 14px 16px; border: 1px solid transparent; font-size: 13px; line-height: 1.6; }
+    .callout strong { display: block; font-size: 14px; margin-bottom: 5px; }
+    .call-red { background: var(--red-soft); border-color: var(--red-bdr); color: #7f1d1d; }
+    .call-red strong { color: #991b1b; }
+    .call-green { background: var(--green-soft); border-color: var(--green-bdr); color: #064e3b; }
+    .call-green strong { color: #065f46; }
+    .call-blue { background: var(--blue-soft); border-color: var(--blue-mid); color: var(--blue-text); }
+    .call-blue strong { color: #1e3a8a; }
+    .call-amber { background: var(--amber-soft); border-color: var(--amber-bdr); color: #78350f; }
+    .call-amber strong { color: #92400e; }
+    .info-card { border: 1px solid var(--line); background: #fff; border-radius: 13px; padding: 16px; }
+    .info-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin: 8px 0 7px; }
+    .info-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .chip { padding: 5px 11px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text2); font-size: 12px; font-weight: 600; }
+
+    /* ══ ATTRACTION SLIDER ══ */
+    .att-slider { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(210px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+    .att-card { min-height: 200px; border-radius: 14px; padding: 14px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+    .att-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(10,20,40,.8) 100%); }
+    .att-card > * { position: relative; z-index: 1; }
+    .att-card h3 { font-size: 14px; font-weight: 700; color: #fff; margin: 0 0 3px; }
+    .att-card p { font-size: 11px; color: rgba(255,255,255,.8); margin: 0; }
+
+    /* ══ STATUS BANNER ══ */
+    .status-banner { border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 0; }
+    .status-banner-green { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #6ee7b7; }
+    .status-banner-red { background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 2px solid #fca5a5; }
+    .status-banner-blue { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #93c5fd; }
+    .status-banner-ico { font-size: 36px; flex-shrink: 0; }
+    .status-banner-body h3 { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .status-banner-green .status-banner-body h3 { color: #065f46; }
+    .status-banner-red .status-banner-body h3 { color: #991b1b; }
+    .status-banner-blue .status-banner-body h3 { color: #1e40af; }
+    .status-banner-body p { font-size: 13px; margin: 0; line-height: 1.55; }
+    .status-banner-green .status-banner-body p { color: #047857; }
+    .status-banner-red .status-banner-body p { color: #7f1d1d; }
+    .status-banner-blue .status-banner-body p { color: #1d4ed8; }
+    .status-checks { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+    .status-check { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; }
+
+    /* ══ AUTH TYPE GRID ══ */
+    .auth-type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .auth-type-card { border: 2px solid var(--line); border-radius: 14px; padding: 16px 14px; position: relative; transition: all 0.2s; }
+    .auth-type-card.active { border-color: var(--blue); background: linear-gradient(180deg, #eef4ff 0%, #fff 100%); box-shadow: 0 4px 20px rgba(26,86,219,0.12); }
+    .auth-type-card.inactive { opacity: 0.38; }
+    .auth-card-icon { font-size: 26px; margin-bottom: 10px; }
+    .auth-card-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; line-height: 1.25; }
+    .auth-card-desc { font-size: 11px; color: var(--muted); line-height: 1.55; }
+    .auth-card-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 12px; background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+    .auth-type-card:not(.active) .auth-card-badge { display: none; }
+
+    /* ══ VISA CATEGORIES ══ */
+    .visa-cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .visa-cat-card { border: 2px solid var(--line); border-radius: 14px; padding: 18px 16px; position: relative; transition: all 0.2s; }
+    .visa-cat-card.active { border-color: var(--blue); background: linear-gradient(180deg, #eef4ff 0%, #fff 100%); box-shadow: 0 4px 20px rgba(26,86,219,0.12); }
+    .visa-cat-card.inactive { opacity: 0.42; }
+    .visa-cat-letter { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .visa-cat-card:not(.active) .visa-cat-letter { background: #eef0f5; color: var(--muted); }
+    .visa-cat-card.active .visa-cat-letter { background: var(--blue); color: #fff; }
+    .visa-cat-name { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+    .visa-cat-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-bottom: 9px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+    .visa-cat-card.active .visa-cat-tag { background: var(--blue-soft); border-color: var(--blue-mid); color: var(--blue-text); }
+    .visa-cat-desc { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 10px; }
+    .visa-cat-note { font-size: 12px; color: var(--text2); font-weight: 500; }
+    .visa-cat-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 12px; background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+    .visa-cat-card:not(.active) .visa-cat-badge { display: none; }
+
+    /* ══ ENTRY TYPES ══ */
+    .entry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+    .entry-card { border: 1px solid var(--line); background: #fff; border-radius: 11px; padding: 13px; }
+    .entry-badge { width: 38px; height: 38px; border-radius: 10px; background: var(--blue-soft); color: var(--blue); display: grid; place-items: center; font-size: 16px; font-weight: 900; margin-bottom: 8px; font-family: 'DM Serif Display', serif; }
+    .entry-card h4 { font-size: 13px; font-weight: 700; color: var(--text); margin: 0 0 3px; }
+    .entry-card p { font-size: 11px; color: var(--muted); margin: 0; }
+
+    /* ══ TABLE ══ */
+    .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .tbl-wrap table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    .tbl-wrap th { background: #f5f8ff; color: var(--text2); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 11px 14px; border-bottom: 1px solid var(--line); text-align: left; }
+    .tbl-wrap td { padding: 11px 14px; border-bottom: 1px solid #f1f5fb; font-size: 13px; color: var(--text2); vertical-align: top; line-height: 1.5; }
+    .tbl-wrap tr:last-child td { border-bottom: none; }
+    .tag { display: inline-flex; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .tag-g { background: #d1fae5; color: #065f46; } .tag-a { background: #fef3c7; color: #92400e; } .tag-r { background: #fee2e2; color: #991b1b; }
+
+    /* ══ LISTS ══ */
+    .list-check, .list-cross, .list-dot { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 7px; }
+    .list-check li, .list-cross li, .list-dot li { display: flex; gap: 8px; font-size: 13px; color: var(--text2); line-height: 1.5; align-items: flex-start; }
+    .list-check li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: var(--green); }
+    .list-cross li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: var(--red); }
+    .list-dot li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: var(--blue); }
+
+    /* ══ STEP BY STEP ══ */
+    .steps-nav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .step-tab { background: #e8edf8; border: 2px solid #c5d0e8; border-radius: 12px; padding: 10px 6px 9px; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: all 0.18s; font-family: 'Outfit', sans-serif; flex: 1; min-width: 90px; }
+    .step-tab:hover { border-color: var(--blue); background: var(--blue-soft); transform: translateY(-2px); }
+    .step-tab.active { border-color: var(--blue); background: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.2); }
+    .step-tab.done { border-color: var(--green-bdr); background: var(--green-soft); }
+    .snum { width: 20px; height: 20px; border-radius: 50%; background: #c5d0e8; color: var(--navy); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step-tab.active .snum { background: rgba(255,255,255,0.25); color: #fff; }
+    .step-tab.done .snum { background: var(--green); color: #fff; }
+    .sico { font-size: 18px; line-height: 1; }
+    .slbl { font-size: 9px; font-weight: 700; color: var(--navy); letter-spacing: .02em; text-transform: uppercase; line-height: 1.3; text-align: center; }
+    .step-tab.active .slbl { color: #fff; }
+    .step-tab.done .slbl { color: #065f46; }
+    .step-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    .step-head { padding: 16px 20px; background: linear-gradient(135deg, var(--navy) 0%, #1a3a6b 100%); display: flex; align-items: center; gap: 14px; }
+    .step-head-ico { width: 46px; height: 46px; background: linear-gradient(135deg, var(--blue), #60a5fa); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .step-head-info .step-label { font-size: 10px; font-weight: 700; color: #60a5fa; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
+    .step-head-info h3 { font-family: 'DM Serif Display', serif; font-size: 18px; color: #fff; margin: 0 0 2px; }
+    .step-head-info p { font-size: 12px; color: rgba(255,255,255,.6); margin: 0; }
+    .step-body { padding: 20px; }
+    .step-flow { display: grid; gap: 10px; }
+    .step-row { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
+    .srow-num { width: 44px; height: 44px; border-radius: 12px; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 16px; font-family: 'DM Serif Display', serif; }
+    .step-row h4 { font-size: 14px; font-weight: 700; color: var(--text); margin: 2px 0 4px; }
+    .step-row p { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.55; }
+
+    /* ══ DOCUMENT PREP (STEP 3) ══ */
+    .status-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .status-ftab { border: 1.5px solid var(--line); background: #fff; color: var(--text2); border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.15s; white-space: nowrap; }
+    .status-ftab:hover { border-color: var(--blue-mid); background: var(--blue-soft); color: var(--blue-text); }
+    .status-ftab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .doc-prep-shell { display: grid; grid-template-columns: 200px 1fr; gap: 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; min-height: 460px; }
+    .doc-sub-nav { background: #f4f7fd; border-right: 1px solid var(--line); padding: 12px 8px; display: flex; flex-direction: column; gap: 3px; }
+    .doc-sub-btn { display: flex; align-items: flex-start; gap: 9px; padding: 10px 11px; border-radius: 10px; border: none; background: transparent; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500; color: var(--text2); text-align: left; transition: all 0.15s; line-height: 1.3; }
+    .doc-sub-btn:hover { background: #eaeffa; color: var(--blue); }
+    .doc-sub-btn.active { background: #fff; color: var(--blue); font-weight: 700; border: 1px solid var(--blue-mid); box-shadow: 0 1px 5px rgba(26,86,219,.08); }
+    .doc-sub-num { width: 20px; height: 20px; border-radius: 50%; background: #e2e8f0; color: var(--muted); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.15s; }
+    .doc-sub-btn.active .doc-sub-num { background: var(--blue); color: #fff; }
+    .doc-sub-btn.done .doc-sub-num { background: var(--green); color: #fff; }
+    .doc-content-area { padding: 20px; overflow-y: auto; }
+    .doc-content-panel { display: none; }
+    .doc-content-panel.active { display: block; }
+    .doc-alert-r { background: #fff5f5; border: 1px solid #f1cccc; border-radius: 9px; padding: 10px 13px; margin-bottom: 12px; font-size: 12px; color: #7f1d1d; line-height: 1.6; }
+    .doc-alert-a { background: var(--amber-soft); border: 1px solid var(--amber-bdr); border-radius: 9px; padding: 10px 13px; margin: 10px 0; font-size: 12px; color: #78350f; line-height: 1.6; }
+    .doc-alert-b { background: var(--blue-soft); border: 1px solid var(--blue-mid); border-radius: 9px; padding: 10px 13px; margin: 10px 0; font-size: 12px; color: var(--blue-text); line-height: 1.6; }
+    .doc-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f0f4fb; font-size: 13px; color: var(--text2); line-height: 1.5; }
+    .doc-row:last-child { border-bottom: none; }
+    .doc-row strong { font-weight: 600; color: var(--text); }
+    .doc-row-ico { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .supp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .supp-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 10px 0; }
+    .photo-spec { background: var(--blue-soft); border: 1px solid var(--blue-mid); border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--text2); }
+    .photo-spec strong { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--blue-text); margin-bottom: 2px; }
+    .insure-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .insure-chip { background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: #0369a1; }
+    .fin-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+    .fin-tab { border: 1px solid var(--line); background: var(--surface); color: var(--text2); border-radius: 8px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.15s; }
+    .fin-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .fin-panel { display: none; }
+    .fin-panel.active { display: block; }
+    .check-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 5px; }
+    .check-list li { display: flex; gap: 8px; font-size: 13px; color: var(--text2); padding: 7px 0; border-bottom: 1px solid #f0f4fb; line-height: 1.4; }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li span.ck { color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .check-list li span.warn { color: var(--amber); font-weight: 700; flex-shrink: 0; }
+    .ties-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ties-card { border-radius: 12px; padding: 14px; }
+    .ties-strong { background: var(--green-soft); border: 1px solid var(--green-bdr); }
+    .ties-weak { background: var(--amber-soft); border: 1px solid var(--amber-bdr); }
+    .ties-title { font-size: 12px; font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; gap: 6px; }
+    .ties-strong .ties-title { color: #065f46; }
+    .ties-weak .ties-title { color: #78350f; }
+    .ties-item { display: flex; gap: 7px; font-size: 12px; color: var(--text2); margin-bottom: 5px; line-height: 1.4; }
+    .tdot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+    /* ══ BIOMETRICS QUESTION ══ */
+    .bio-question { background: linear-gradient(135deg, #f0f4fb, #e8f0ff); border: 1px solid var(--blue-mid); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    .bio-q-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .bio-q-sub { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .bio-btn-row { display: flex; gap: 10px; }
+    .bio-btn { padding: 10px 24px; border-radius: 10px; border: 2px solid var(--line); background: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.18s; color: var(--text); }
+    .bio-btn:hover { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+    .bio-btn.selected-yes { background: var(--green); color: #fff; border-color: var(--green); }
+    .bio-btn.selected-no { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .bio-result { border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 13px; line-height: 1.6; display: none; }
+    .bio-result.show { display: block; }
+    .bio-result-yes { background: var(--green-soft); border: 1px solid var(--green-bdr); color: #065f46; }
+    .bio-result-no { background: var(--blue-soft); border: 1px solid var(--blue-mid); color: var(--blue-text); }
+
+    /* ══ STATE SELECTOR ══ */
+    .state-selector-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+    .state-selector-card label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+    .state-sel-row { display: flex; gap: 10px; align-items: center; }
+    .state-select { flex: 1; appearance: none; -webkit-appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aa5b4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 36px 10px 12px; font-size: 13px; color: var(--text); font-family: 'Outfit', sans-serif; cursor: pointer; }
+    .state-select:focus { outline: none; border-color: var(--blue); }
+    .assigned-consulate { border: 1.5px solid var(--blue); background: var(--blue-soft); border-radius: 12px; padding: 12px 14px; margin-top: 12px; display: none; }
+    .assigned-consulate.show { display: block; }
+    .ac-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--blue-text); margin-bottom: 4px; }
+    .ac-name { font-size: 15px; font-weight: 800; color: var(--blue-text); margin-bottom: 2px; }
+    .ac-addr { font-size: 12px; color: var(--text2); }
+
+    /* ══ APPROVAL INSIGHTS ══ */
+    .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+    .risk-card { border-radius: 14px; padding: 16px; border: 2px solid transparent; }
+    .risk-green { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-color: #6ee7b7; }
+    .risk-amber { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: #fcd34d; }
+    .risk-red { background: linear-gradient(135deg, #fef2f2, #fee2e2); border-color: #fca5a5; }
+    .risk-card h3 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .risk-green h3 { color: #065f46; } .risk-amber h3 { color: #78350f; } .risk-red h3 { color: #991b1b; }
+    .risk-card p { font-size: 12px; line-height: 1.55; }
+    .risk-green p { color: #047857; } .risk-amber p { color: #92400e; } .risk-red p { color: #7f1d1d; }
+    .risk-label { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
+    .risk-green .risk-label { background: #d1fae5; color: #065f46; }
+    .risk-amber .risk-label { background: #fef3c7; color: #78350f; }
+    .risk-red .risk-label { background: #fee2e2; color: #991b1b; }
+    .stat-card { border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 14px; }
+    .stat-card .score { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--blue); margin-bottom: 4px; }
+    .stat-card h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 4px; }
+    .stat-card p { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.5; }
+    .rej-item { border: 1px solid #f1cccc; background: #fff8f8; border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+    .rej-ico { font-size: 22px; flex-shrink: 0; }
+    .rej-item h4 { font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 4px; }
+    .rej-item p { font-size: 13px; color: #6b3232; line-height: 1.6; margin: 0; }
+
+    /* ══ ENTRY EXIT ══ */
+    .rule-90 { background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 2px solid #fdba74; border-radius: 16px; padding: 20px 22px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
+    .rule-90-ico { font-size: 32px; flex-shrink: 0; }
+    .rule-90-body h3 { font-size: 17px; font-weight: 800; color: #9a3412; margin-bottom: 6px; }
+    .rule-90-body p { font-size: 13px; color: #7c2d12; line-height: 1.6; margin: 0; }
+    .rule-card { border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 14px; }
+    .rule-card h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 7px 0 7px; }
+    .rule-card ul { padding-left: 16px; color: var(--text2); font-size: 13px; line-height: 1.65; }
+
+    /* ══ MAP ══ */
+    #consulateMap { height: 260px; border-radius: 12px; border: 1px solid var(--line); overflow: hidden; background: #e8eef5; }
+    .leaflet-container { height: 100% !important; }
+    .cc-card { display: flex; gap: 9px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; cursor: pointer; background: var(--surface); transition: 0.18s; margin-bottom: 6px; }
+    .cc-card.active { border-color: var(--blue); background: var(--blue-soft); }
+    .cc-ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: #eef3ff; font-size: 17px; flex-shrink: 0; }
+    .cc-city { font-size: 13px; font-weight: 700; color: var(--text); }
+    .cc-state { font-size: 11px; color: var(--muted); }
+    .cc-addr { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+    .cc-hours { font-size: 10px; color: var(--muted); margin-top: 3px; display: flex; gap: 5px; align-items: center; }
+    .cc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .map-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .mpill { border: 1px solid var(--line2); background: #fff; color: var(--text2); border-radius: 999px; padding: 5px 11px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.15s; }
+    .mpill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    #mapSidebar { max-height: 260px; overflow-y: auto; }
+
+    /* ══ STEP 2 APP FORM — left/right layout ══ */
+    .app-form-shell { display: grid; grid-template-columns: 190px 1fr; gap: 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; min-height: 400px; }
+    .app-form-nav { background: #f4f7fd; border-right: 1px solid var(--line); padding: 12px 8px; display: flex; flex-direction: column; gap: 3px; }
+    .app-form-btn { display: flex; align-items: center; gap: 9px; padding: 11px 12px; border-radius: 10px; border: none; background: transparent; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; color: var(--text2); text-align: left; transition: all 0.15s; line-height: 1.3; white-space: nowrap; }
+    .app-form-btn:hover { background: #eaeffa; color: var(--blue); }
+    .app-form-btn.active { background: #fff; color: var(--blue); font-weight: 800; border: 1px solid var(--blue-mid); box-shadow: 0 1px 5px rgba(26,86,219,.08); }
+    .app-form-content { padding: 20px; overflow-y: auto; }
+    .app-panel { display: none; }
+    .app-panel.active { display: block; }
+
+    /* ══ FEE TABLE ══ */
+    .fee-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .fee-tbl th { background: #f0f4fb; color: var(--text2); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px; border: 1px solid var(--line); text-align: left; }
+    .fee-tbl td { padding: 10px 12px; border: 1px solid var(--line); color: var(--text2); vertical-align: top; line-height: 1.5; font-size: 12px; }
+    .fee-tbl tr:nth-child(even) td { background: #f9fafc; }
+    .fee-full { font-weight: 800; color: var(--blue); font-size: 14px; }
+    .fee-reduced { font-weight: 600; color: var(--amber); }
+    .fee-free { font-weight: 600; color: var(--green); }
+    .fee-note-red { background: #fff0f0; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 11px 14px; margin-top: 14px; font-size: 12px; color: #991b1b; font-weight: 600; line-height: 1.6; }
+
+    /* ══ SIDEBAR ══ */
+    .side-col { display: grid; gap: 14px; position: sticky; top: 10px; }
+    .side-cta { background: linear-gradient(160deg, #0d1b2e 0%, #1a3a6b 100%); border-radius: 16px; padding: 20px 18px; color: #fff; }
+    .side-cta h3 { font-family: 'DM Serif Display', serif; font-size: 22px; color: #fff; margin: 0 0 6px; }
+    .side-cta .sub { font-size: 13px; color: rgba(255,255,255,.65); margin: 0 0 12px; }
+    .price-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+    .price-val { font-family: 'DM Serif Display', serif; font-size: 38px; color: #fff; line-height: 1; }
+    .price-unit { font-size: 14px; color: rgba(255,255,255,.6); }
+    .price-label { font-size: 11px; color: rgba(255,255,255,.5); margin-bottom: 14px; }
+    .side-pts { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 7px; }
+    .side-pts li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: rgba(255,255,255,.8); line-height: 1.4; }
+    .side-pt-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--teal); flex-shrink: 0; margin-top: 4px; }
+    .book-btn { width: 100%; background: linear-gradient(135deg, #1a56db, #0ea5a0); border: none; border-radius: 999px; padding: 12px 16px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; font-family: 'Outfit', sans-serif; transition: opacity 0.15s; }
+    .book-btn:hover { opacity: .9; }
+    .side-contact { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .side-contact h3 { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin: 0 0 12px; }
+    .contact-row { margin-bottom: 10px; }
+    .contact-row .lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+    .contact-row a { font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; }
+    .contact-row a:hover { text-decoration: underline; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1100px) {
+      .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+      .page { grid-template-columns: 1fr; }
+      .side-col { position: static; }
+      .g2 { grid-template-columns: 1fr; }
+      .landing-inner { grid-template-columns: 1fr; gap: 40px; padding: 40px 0; }
+      .auth-type-grid { grid-template-columns: 1fr 1fr; }
+      .visa-cat-grid { grid-template-columns: 1fr; }
+      .doc-prep-shell { grid-template-columns: 1fr; }
+      .doc-sub-nav { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--line); }
+      .app-form-shell { grid-template-columns: 1fr; }
+      .app-form-nav { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--line); }
+      .risk-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .steps-nav { flex-wrap: wrap; }
+      .step-tab { min-width: calc(33% - 6px); }
+      .g3, .g4 { grid-template-columns: 1fr 1fr; }
+      .entry-grid { grid-template-columns: 1fr 1fr; }
+      .auth-type-grid { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .metrics-strip { grid-template-columns: repeat(2, 1fr); }
+      .g2, .g3, .g4, .ties-grid { grid-template-columns: 1fr; }
+      .step-tab { min-width: calc(50% - 6px); }
+      .hero h1 { font-size: 26px; }
+      .auth-type-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════ LANDING ════════════ -->
+<div id="landingScreen">
+  <div class="landing-glow"></div>
+  <div class="landing-inner">
+    <div class="landing-left">
+      <div class="landing-eyebrow"><span>🌍</span> Global Travel Authorization Engine</div>
+      <h1 class="landing-h1">Smart <span class="gold-text">Schengen Visa</span><br>Guidance — France,<br>Germany &amp; Norway</h1>
+      <p class="landing-sub">Instantly determines whether you need a Visa, eVisa, ETIAS, or have visa-free access. Works for all 200+ nationalities across Europe's Schengen area.</p>
+      <div class="landing-badges">
+        <span class="landing-badge"><span class="badge-icon">🌐</span>200+ Passport Countries</span>
+        <span class="landing-badge"><span class="badge-icon">🔵</span>ETIAS / eVisa / Visa Detection</span>
+        <span class="landing-badge"><span class="badge-icon">⚖️</span>EU Regulation 810/2009</span>
+        <span class="landing-badge"><span class="badge-icon">⭐</span>4.9/5 from 3,200+ reviews</span>
+      </div>
+    </div>
+    <div class="landing-right">
+      <div class="form-card">
+        <h2 class="form-card-title">Check Travel Authorization</h2>
+        <p class="form-card-sub">Enter your details for an instant assessment — Visa, eVisa, ETIAS, or Visa-Free.</p>
+        <div class="progress-row">
+          <span class="prog-dot" id="dot0"></span><span class="prog-dot" id="dot1"></span>
+          <span class="prog-dot" id="dot2"></span><span class="prog-dot" id="dot3"></span>
+          <span class="prog-label" id="progLabel">0 of 4 fields filled</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Passport Country <span class="req">*</span></label>
+            <select class="form-select" id="sel-passport" onchange="handleSelect()"><option value="">— Select Country —</option></select>
+          </div>
+          <div class="form-group">
+            <label>Country of Residence <span class="req">*</span></label>
+            <select class="form-select" id="sel-residence" onchange="handleSelect()"><option value="">— Select Country —</option></select>
+          </div>
+          <div class="form-group">
+            <label>Destination Country <span class="req">*</span></label>
+            <select class="form-select" id="sel-destination" onchange="handleSelect()">
+              <option value="">— Select Destination —</option>
+              <option value="france">France</option>
+              <option value="germany">Germany</option>
+              <option value="norway">Norway</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Purpose of Travel <span class="req">*</span></label>
+            <select class="form-select" id="sel-purpose" onchange="handleSelect()">
+              <option value="">— Select Purpose —</option>
+              <option value="tourism">Tourism / Holiday</option>
+              <option value="business">Business</option>
+              <option value="family">Visiting Family / Friends</option>
+              <option value="transit">Transit</option>
+              <option value="medical">Medical Treatment</option>
+              <option value="cultural">Cultural / Sports Event</option>
+              <option value="study">Study (Short Course)</option>
+            </select>
+          </div>
+        </div>
+        <button class="form-btn" id="startBtn" disabled onclick="startGuide()">Complete 4 more fields to continue</button>
+        <p class="form-note">Your data is not stored · Results are informational only</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ GUIDE ════════════ -->
+<div id="guideContent">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-flag">
+        <div class="flag-stripe"><span class="f1"></span><span class="f2"></span><span class="f3"></span></div>
+        <span class="hero-eyebrow">French Republic · Schengen Area</span>
+      </div>
+      <h1>France Schengen Visa<br><em id="heroSubtitle">for USA Applicants</em></h1>
+      <p class="hero-sub">Complete guide — eligibility, documents, process, and approval tips tailored to your passport and travel purpose.</p>
+      <div class="hero-meta-row">
+        <span class="hero-meta-pill" id="heroPillPassport">🛂 Passport: —</span>
+        <span class="hero-meta-pill" id="heroPillPurpose">✈️ Purpose: —</span>
+        <button onclick="resetToLanding()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.75);border-radius:999px;padding:4px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">← Change Details</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics-strip" id="metricsStrip">
+    <div class="metric"><div class="metric-ico">✅</div><h4 id="m-auth">Authorization</h4><p id="m-authv">Schengen Visa</p></div>
+    <div class="metric"><div class="metric-ico">◇</div><h4>Type</h4><p id="m-type">Short Stay C</p></div>
+    <div class="metric"><div class="metric-ico">⏱</div><h4>Max Stay</h4><p id="m-stay">Up to 90 days</p></div>
+    <div class="metric"><div class="metric-ico">📅</div><h4>Processing</h4><p id="m-proc">10–15 days</p></div>
+    <div class="metric"><div class="metric-ico">🔄</div><h4>Entry</h4><p id="m-entry">Single / Multiple</p></div>
+    <div class="metric"><div class="metric-ico">💶</div><h4>Fee</h4><p id="m-fee">€90</p></div>
+  </div>
+
+  <main class="page">
+    <section class="main-panel">
+      <nav class="nav-tabs" id="mainTabs"></nav>
+
+      <!-- ══ TAB 0: OVERVIEW ══ -->
+      <div class="content-section active" id="sec-0">
+        <div class="sec-card">
+          <div class="sec-head">
+            <div class="eyebrow">Overview</div>
+            <h2 id="overviewTitle">France Schengen Visa — What You Need to Know</h2>
+            <p id="overviewDesc">Based on your passport, here is your travel authorization status and what you need to know before travelling to France.</p>
+          </div>
+          <div class="sec-body stack">
+            <div id="statusBanner"></div>
+            <div id="overviewContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TAB 1: STEP-BY-STEP ══ -->
+      <div class="content-section" id="sec-1">
+        <div class="sec-card">
+          <div class="sec-head">
+            <div class="eyebrow">Process</div>
+            <h2 id="stepByStepTitle">Step-by-Step Application Process</h2>
+            <p id="stepByStepDesc">Follow each step in order — from eligibility check through appointment, processing, and passport return.</p>
+          </div>
+          <div class="sec-body">
+            <div class="steps-nav" id="stepNav"></div>
+            <div class="step-card" id="stepCard"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TAB 2: APPROVAL INSIGHTS ══ -->
+      <div class="content-section" id="sec-2">
+        <div class="sec-card">
+          <div class="sec-head">
+            <div class="eyebrow">Approval Insights</div>
+            <h2>What Strengthens or Weakens Approval?</h2>
+            <p>Review outcomes are driven by consistency, credibility, and how clearly your file supports a short, lawful trip to France.</p>
+          </div>
+          <div class="sec-body stack">
+            <div class="risk-grid">
+              <div class="risk-card risk-green">
+                <div class="risk-label">🟢 Strong Approval Signal</div>
+                <h3>High Approval Likelihood</h3>
+                <p>Valid US immigration status, strong financial history, confirmed employment or enrollment, detailed consistent itinerary, and complete document file.</p>
+              </div>
+              <div class="risk-card risk-amber">
+                <div class="risk-label">🟡 Medium Risk</div>
+                <h3>Proceed with Extra Care</h3>
+                <p>OPT holders, recently graduated, limited bank history, no fixed address, or short US residency. Strengthen all other documents to compensate.</p>
+              </div>
+              <div class="risk-card risk-red">
+                <div class="risk-label">🔴 High Risk of Rejection</div>
+                <h3>Serious Concerns Present</h3>
+                <p>B1/B2 applicants, expired status, missing I-94, inconsistent information, or fabricated documents. Do not apply until all issues are resolved.</p>
+              </div>
+            </div>
+
+            <div class="g4">
+              <div class="stat-card"><div class="score">01</div><h3>Clear travel purpose</h3><p>Itinerary, bookings, and letters all align to the same stated reason.</p></div>
+              <div class="stat-card"><div class="score">02</div><h3>Strong US status</h3><p>Valid immigration status signals you can and will return.</p></div>
+              <div class="stat-card"><div class="score">03</div><h3>Financial stability</h3><p>Documented consistent funds over 3 months — not just a snapshot.</p></div>
+              <div class="stat-card"><div class="score">04</div><h3>Consistent docs</h3><p>Matching dates, names, and details across all submitted documents.</p></div>
+            </div>
+
+            <div class="g2">
+              <div class="info-card">
+                <div class="eyebrow">🟢 Positive Signals</div>
+                <ul class="list-check" style="margin-top:10px;">
+                  <li>Stable job, school, family, or residence ties in the USA.</li>
+                  <li>Detailed, believable itinerary and confirmed accommodation.</li>
+                  <li>Well-organized file with no missing core documents.</li>
+                  <li>Travel history showing compliant international trips.</li>
+                  <li>I-94 included and all immigration documents current.</li>
+                </ul>
+              </div>
+              <div class="info-card">
+                <div class="eyebrow">🔴 Common Risks</div>
+                <ul class="list-cross" style="margin-top:10px;">
+                  <li>Weak or unclear immigration status in the USA.</li>
+                  <li>Inconsistent dates between flights, hotels, insurance, forms.</li>
+                  <li>Low funds or unexplained large deposits.</li>
+                  <li>Missing I-94 — the most common rejection trigger.</li>
+                  <li>Purpose of travel not supported by evidence submitted.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;">Common Rejection Reasons — &amp; How to Avoid Them</div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.65;">Most Schengen visa rejections are preventable. The majority happen because of missing documents, weak financial proof, inconsistent information, or a poorly explained travel purpose.</p>
+            <div class="rej-item"><span class="rej-ico">💸</span><div><h4>Insufficient or Suspicious Financial Proof</h4><p>Low bank balance, sudden large deposits, no transaction history. The consulate wants steady, documented income over 3 months — not just a current high balance.</p></div></div>
+            <div class="rej-item"><span class="rej-ico">🏠</span><div><h4>Weak or Unproven Ties to the USA</h4><p>No employment letter, no family in USA, no lease, no assets — the French embassy cannot be confident you'll return. Submit maximum evidence.</p></div></div>
+            <div class="rej-item"><span class="rej-ico">🪪</span><div><h4>Invalid, Expired, or Insufficient US Immigration Status</h4><p>Applying on B1/B2, expired H1B or F1, during OPT grace period, or any unauthorized status. US status must be completely valid at submission.</p></div></div>
+            <div class="rej-item"><span class="rej-ico">📂</span><div><h4>Incomplete Document Submission</h4><p>Missing I-94 printout (most common), unsigned I-20, outdated I-797, no travel insurance, no flight itinerary, or missing accommodation proof.</p></div></div>
+            <div class="rej-item"><span class="rej-ico">🗺️</span><div><h4>Unclear, Vague, or Inconsistent Travel Plan</h4><p>No cover letter, no itinerary, inconsistent travel dates, or vague purpose. Dates on application, hotel bookings, and flight itinerary must all match exactly.</p></div></div>
+            <div class="rej-item"><span class="rej-ico">⚠️</span><div><h4>Fraudulent or Altered Documents</h4><p>Edited bank statements, fabricated employment letters, inconsistent information. Leads to automatic rejection and potential future Schengen visa bans.</p></div></div>
+            <div class="rej-item"><span class="rej-ico">🏥</span><div><h4>Missing or Non-Compliant Travel Insurance</h4><p>US domestic insurance, no "Schengen area" coverage, below €30,000 coverage, or policy that doesn't span your entire trip.</p></div></div>
+            <div class="callout call-green"><strong>✅ Prevention Strategy</strong>Use the complete checklist in Step 3 to verify every document before submission. Your application must tell a clear, consistent, honest story across all documents.</div>
+
+            <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:12px;">🔄 What to Do If Rejected</div>
+            <div class="g3">
+              <div class="info-card"><div style="font-size:22px;margin-bottom:8px;">📄</div><h3>Read the Rejection Letter</h3><p>The French Consulate must provide a reason. Read it carefully — it specifies which documents or conditions were unsatisfactory.</p></div>
+              <div class="info-card"><div style="font-size:22px;margin-bottom:8px;">🔁</div><h3>Appeal or Reapply</h3><p>Appeal within the specified period, or reapply with a stronger, more complete file. There is no mandatory waiting period to reapply.</p></div>
+              <div class="info-card"><div style="font-size:22px;margin-bottom:8px;">⚖️</div><h3>Seek Legal Advice</h3><p>For status-related rejections or multiple refusals, consult an immigration attorney before reapplying to avoid further marks on your record.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TAB 3: ENTRY & EXIT RULES ══ -->
+      <div class="content-section" id="sec-3">
+        <div class="sec-card">
+          <div class="sec-head">
+            <div class="eyebrow">Entry &amp; Exit Rules</div>
+            <h2 id="entryExitTitle">Entry and Exit Rules for France</h2>
+            <p id="entryExitDesc">Border-entry and permitted-stay rules for your trip to France and the Schengen area.</p>
+          </div>
+          <div class="sec-body" id="entryExitBody"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="side-col">
+      <div class="side-cta">
+        <h3>Ready to Apply?</h3>
+        <p class="sub">Start your France visa application today with full expert guidance and document review.</p>
+        <div class="price-row"><span class="price-val">$170</span><span class="price-unit">/person</span></div>
+        <div class="price-label">Visa Appointment + Application</div>
+        <ul class="side-pts">
+          <li><span class="side-pt-dot"></span>We secure your visa appointment</li>
+          <li><span class="side-pt-dot"></span>We check all your documents carefully</li>
+          <li><span class="side-pt-dot"></span>Experts review your form before submission</li>
+          <li><span class="side-pt-dot"></span>Help whenever you need it</li>
+        </ul>
+        <button class="book-btn">Book Now</button>
+      </div>
+      <div class="side-contact">
+        <h3>Contact Our Team</h3>
+        <div class="contact-row"><div class="lbl">Phone Support</div><a href="tel:+15168357843">+1 (516) 835-7843</a></div>
+        <div class="contact-row"><div class="lbl">Email Support</div><a href="mailto:help@schengenvisaitinerary.com">help@schengenvisaitinerary.com</a></div>
+        <div class="contact-row"><div class="lbl">French Consulate</div><a href="https://fr.france-visas.gouv.fr/" target="_blank" rel="noopener">france-visas.gouv.fr</a></div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+/* ══ DATA ══ */
+const COUNTRIES = ['Afghanistan','Albania','Algeria','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahrain','Bangladesh','Belarus','Belgium','Bolivia','Bosnia & Herzegovina','Brazil','Bulgaria','Cambodia','Canada','Chile','China','Colombia','Costa Rica','Croatia','Cyprus','Czech Republic','Denmark','Ecuador','Egypt','El Salvador','Estonia','Ethiopia','Finland','France','Georgia','Germany','Ghana','Greece','Guatemala','Honduras','Hungary','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kuwait','Kyrgyzstan','Latvia','Lebanon','Libya','Liechtenstein','Lithuania','Luxembourg','Malaysia','Malta','Mexico','Moldova','Montenegro','Morocco','Nepal','Netherlands','New Zealand','Nigeria','North Macedonia','Norway','Oman','Pakistan','Palestine','Panama','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Saudi Arabia','Senegal','Serbia','Singapore','Slovakia','Slovenia','Somalia','South Africa','South Korea','Spain','Sri Lanka','Sudan','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Thailand','Tunisia','Turkey','Turkmenistan','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Venezuela','Vietnam','Yemen','Zimbabwe'];
+
+const EU_FREE = new Set(['Austria','Belgium','Bulgaria','Croatia','Cyprus','Czech Republic','Denmark','Estonia','Finland','France','Germany','Greece','Hungary','Ireland','Italy','Latvia','Lithuania','Luxembourg','Malta','Netherlands','Poland','Portugal','Romania','Slovakia','Slovenia','Spain','Sweden','Iceland','Liechtenstein','Norway','Switzerland']);
+const ETIAS_EXEMPT = new Set(['United States','United Kingdom','Canada','Australia','New Zealand','Japan','South Korea','Singapore','Israel','United Arab Emirates','Brazil','Mexico','Argentina','Chile','Colombia','Costa Rica','Peru','Paraguay','Uruguay','Malaysia','Taiwan','Albania','Bosnia & Herzegovina','Moldova','Montenegro','North Macedonia','Serbia','Georgia','Armenia']);
+
+function getAuthType(p) {
+  if (EU_FREE.has(p)) return 'free';
+  if (ETIAS_EXEMPT.has(p)) return 'etias';
+  return 'visa';
+}
+
+const CONSULATES = [
+  {city:"New York",state:"NY",region:"northeast",addr:"French Consulate General, 934 Fifth Ave, New York, NY",icon:"🗽",hours:"Mon–Fri by appointment only",lat:40.7745,lng:-73.9660,states:["New York","New Jersey","Connecticut","Pennsylvania","Delaware","Maryland","Virginia","West Virginia","District of Columbia"]},
+  {city:"Boston",state:"MA",region:"northeast",addr:"French Consulate, 31 St James Ave, Boston, MA",icon:"🦞",hours:"Appointment-only submission",lat:42.3565,lng:-71.0602,states:["Massachusetts","Maine","New Hampshire","Vermont","Rhode Island"]},
+  {city:"Chicago",state:"IL",region:"midwest",addr:"French Consulate General, 205 N Michigan Ave, Chicago, IL",icon:"🌬️",hours:"Weekday processing by appointment",lat:41.8859,lng:-87.6228,states:["Illinois","Indiana","Iowa","Michigan","Minnesota","Missouri","Nebraska","North Dakota","Ohio","South Dakota","Wisconsin","Kansas"]},
+  {city:"Miami",state:"FL",region:"south",addr:"French Consulate, 1395 Brickell Ave, Miami, FL",icon:"🌴",hours:"Weekday appointment slots only",lat:25.7617,lng:-80.1918,states:["Florida","Puerto Rico","U.S. Virgin Islands"]},
+  {city:"Houston",state:"TX",region:"south",addr:"French Consulate General, 777 Post Oak Blvd, Houston, TX",icon:"🤠",hours:"Appointment required",lat:29.7524,lng:-95.4632,states:["Texas","Arkansas","Louisiana","Oklahoma","Mississippi"]},
+  {city:"Los Angeles",state:"CA",region:"west",addr:"French Consulate General, 10390 Santa Monica Blvd, Los Angeles, CA",icon:"🎬",hours:"Advance booking strongly recommended",lat:34.0621,lng:-118.4209,states:["California (Southern)","Arizona","Colorado","Hawaii","Idaho","Montana","Nevada","New Mexico","Utah","Wyoming","Alaska","Oregon","Washington"]},
+  {city:"San Francisco",state:"CA",region:"west",addr:"French Consulate General, 340 Pine St, San Francisco, CA",icon:"🌉",hours:"Check appointment calendar",lat:37.7916,lng:-122.4002,states:["California (Northern)","Nevada (Northern)"]},
+  {city:"Atlanta",state:"GA",region:"south",addr:"French Consulate, 285 Peachtree Center Ave, Atlanta, GA",icon:"🍑",hours:"Appointment-only submission",lat:33.7490,lng:-84.3880,states:["Georgia","Alabama","Kentucky","North Carolina","South Carolina","Tennessee"]}
+];
+
+const US_STATES = ["Alabama","Alaska","Arizona","Arkansas","California (Northern)","California (Southern)","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Puerto Rico","U.S. Virgin Islands"];
+
+function getConsulateByState(state) {
+  return CONSULATES.find(c => c.states.includes(state)) || null;
+}
+
+/* ══ SELECTS ══ */
+function populateSelects() {
+  ['sel-passport','sel-residence'].forEach(id => {
+    const sel = document.getElementById(id);
+    COUNTRIES.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; sel.appendChild(opt); });
+  });
+  const residSel = document.getElementById('sel-residence');
+  for (let opt of residSel.options) { if (opt.value === 'United States') { opt.selected = true; break; } }
+}
+populateSelects();
+
+/* ══ FORM ══ */
+let userPassport='', userResidence='', userDestination='', userPurpose='', userAuthType='visa';
+function handleSelect() {
+  const ids = ['sel-passport','sel-residence','sel-destination','sel-purpose'];
+  const cnt = ids.filter(id => document.getElementById(id).value !== '').length;
+  ids.forEach((id,i) => {
+    const el = document.getElementById(id), dot = document.getElementById('dot'+i);
+    el.classList.toggle('filled', el.value !== '');
+    if (dot) dot.classList.toggle('filled', el.value !== '');
+  });
+  const remaining = 4 - cnt, btn = document.getElementById('startBtn'), label = document.getElementById('progLabel');
+  label.textContent = cnt === 4 ? 'All fields complete ✓' : `${cnt} of 4 fields filled`;
+  btn.disabled = cnt < 4;
+  btn.textContent = cnt === 4 ? 'Check My Travel Authorization →' : `Complete ${remaining} more field${remaining !== 1 ? 's' : ''} to continue`;
+}
+
+/* ══ START GUIDE ══ */
+function startGuide() {
+  userPassport = document.getElementById('sel-passport').value;
+  userResidence = document.getElementById('sel-residence').value;
+  userDestination = document.getElementById('sel-destination').value;
+  userPurpose = document.getElementById('sel-purpose').value;
+  userAuthType = getAuthType(userPassport);
+  curSec = 0;
+
+  const ls = document.getElementById('landingScreen');
+  ls.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+  ls.style.opacity = '0'; ls.style.transform = 'translateY(-20px)';
+  setTimeout(() => {
+    ls.style.display = 'none';
+    const gc = document.getElementById('guideContent');
+    gc.style.display = 'block'; gc.style.opacity = '0'; gc.style.transition = 'opacity 0.35s ease';
+    setTimeout(() => { gc.style.opacity = '1'; }, 30);
+    updateHero();
+    updateMetrics();
+    buildTabs();
+    renderOverview();
+    renderEntryExit();
+    document.querySelectorAll('.content-section').forEach((el, i) => el.classList.toggle('active', i === 0));
+  }, 420);
+}
+
+function resetToLanding() {
+  const gc = document.getElementById('guideContent');
+  gc.style.transition = 'opacity 0.3s ease'; gc.style.opacity = '0';
+  setTimeout(() => {
+    gc.style.display = 'none';
+    const ls = document.getElementById('landingScreen');
+    ls.style.display = 'flex'; ls.style.opacity = '0'; ls.style.transform = 'translateY(0)';
+    setTimeout(() => { ls.style.transition = 'opacity 0.35s ease'; ls.style.opacity = '1'; }, 30);
+  }, 320);
+}
+
+/* ══ HERO & METRICS ══ */
+const purposeLabel = { tourism:'Tourism / Holiday', business:'Business', family:'Visiting Family / Friends', transit:'Transit', medical:'Medical Treatment', cultural:'Cultural / Sports Event', study:'Study (Short Course)' };
+function updateHero() {
+  document.getElementById('heroPillPassport').textContent = '🛂 ' + userPassport;
+  document.getElementById('heroPillPurpose').textContent = '✈️ ' + (purposeLabel[userPurpose] || userPurpose);
+  document.getElementById('heroSubtitle').textContent = `for ${userPassport} Holders`;
+}
+function updateMetrics() {
+  const m = {
+    visa: { auth:'Schengen Visa', type:'Short Stay Type C', stay:'Up to 90 days', proc:'10–15 days', entry:'Single / Multiple', fee:'€90' },
+    etias: { auth:'ETIAS', type:'Online Auth', stay:'Up to 90 days', proc:'Minutes–Hours', entry:'Multiple', fee:'€7' },
+    free: { auth:'Free Movement', type:'EU / EEA Right', stay:'Unlimited', proc:'Not Required', entry:'Unrestricted', fee:'Free' }
+  }[userAuthType];
+  document.getElementById('m-authv').textContent = m.auth;
+  document.getElementById('m-type').textContent = m.type;
+  document.getElementById('m-stay').textContent = m.stay;
+  document.getElementById('m-proc').textContent = m.proc;
+  document.getElementById('m-entry').textContent = m.entry;
+  document.getElementById('m-fee').textContent = m.fee;
+}
+
+/* ══ DYNAMIC TAB SYSTEM ══ */
+const SECTION_DEFS = [
+  { idx: 0, label: 'Overview' },
+  { idx: 1, label: 'Step-by-Step Process' },
+  { idx: 2, label: 'Approval Insights' },
+  { idx: 3, label: 'Entry & Exit Rules' }
+];
+const TAB_MAP = {
+  visa:  [0, 1, 2, 3],
+  etias: [0, 1, 3],
+  free:  [0, 3]
+};
+let curSec = 0;
+
+function buildTabs() {
+  const visible = TAB_MAP[userAuthType] || [0, 1, 2, 3];
+  document.getElementById('mainTabs').innerHTML = visible.map(secIdx =>
+    `<button class="nav-tab${secIdx === curSec ? ' active' : ''}" onclick="setSec(${secIdx})">${SECTION_DEFS[secIdx].label}</button>`
+  ).join('');
+}
+
+function setSec(idx) {
+  curSec = idx;
+  buildTabs();
+  document.querySelectorAll('.content-section').forEach((el, i) => el.classList.toggle('active', i === idx));
+  if (idx === 1) {
+    if (userAuthType === 'etias') showEtiasStep(0);
+    else showStep(0);
+  }
+}
+
+/* ══ OVERVIEW ══ */
+function renderOverview() {
+  const banner = document.getElementById('statusBanner');
+  const content = document.getElementById('overviewContent');
+
+  if (userAuthType === 'free') {
+    banner.innerHTML = `<div class="status-banner status-banner-green"><div class="status-banner-ico">✅</div><div class="status-banner-body"><h3>EU / EEA Free Movement — No Authorization Required</h3><div class="status-checks"><div class="status-check" style="color:#065f46;">✔ No Visa Required</div><div class="status-check" style="color:#065f46;">✔ No ETIAS Required</div><div class="status-check" style="color:#065f46;">✔ Enter and stay freely as an EU/EEA citizen</div></div></div></div>`;
+    content.innerHTML = `<div class="info-card"><div class="eyebrow">EU Free Movement</div><h3>You have the right to travel freely within the Schengen Area</h3><p>As a citizen of an EU/EEA/Swiss member state, you do not need any visa or pre-travel authorization to visit France. Simply travel with your national ID or passport.</p></div>
+    <div class="callout call-green"><strong>✅ What This Means for You</strong>No application, no fees, no documents to gather beyond your valid passport or national ID. You may stay as long as you wish — EU free movement rights apply.</div>`;
+  } else if (userAuthType === 'etias') {
+    banner.innerHTML = `<div class="status-banner status-banner-blue"><div class="status-banner-ico">🔵</div><div class="status-banner-body"><h3>ETIAS Authorization Required (${userPassport} Passport)</h3><div class="status-checks"><div class="status-check" style="color:#1d4ed8;">✔ No Visa Required — Visa-Free Country</div><div class="status-check" style="color:#1d4ed8;">✔ ETIAS Required — Online Pre-Travel Authorization</div></div></div></div>`;
+    content.innerHTML = `
+    <div class="g2">
+      <div class="info-card"><div class="eyebrow">What is ETIAS?</div><h3>European Travel Information and Authorisation System</h3><p>ETIAS is an online pre-travel authorization system for visa-free countries. It is not a visa — it is a simple online check completed before departure.</p></div>
+      <div class="info-card"><div class="eyebrow">Key Details</div>
+        <div class="doc-row"><span class="doc-row-ico">💶</span><span><strong>Fee:</strong> €7 (waived for under 18 and over 70)</span></div>
+        <div class="doc-row"><span class="doc-row-ico">⏱</span><span><strong>Processing:</strong> Typically minutes to hours</span></div>
+        <div class="doc-row"><span class="doc-row-ico">📅</span><span><strong>Validity:</strong> 3 years or until passport expiry</span></div>
+        <div class="doc-row"><span class="doc-row-ico">🌍</span><span><strong>Coverage:</strong> All 29 Schengen Area countries</span></div>
+        <div class="doc-row"><span class="doc-row-ico">⏰</span><span><strong>Max Stay:</strong> 90 days in any 180-day period</span></div>
+      </div>
+    </div>
+    <div class="callout call-blue"><strong>🔵 How to Apply for ETIAS</strong>Apply online via the official ETIAS website before your travel date. Have your passport, email address, and payment method ready. Most applications are approved within minutes.</div>
+    <div style="margin-top:10px;"><a href="https://travel-europe.europa.eu/etias_en" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a56db,#0ea5a0);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;">Apply for ETIAS →</a></div>`;
+  } else {
+    banner.innerHTML = `<div class="status-banner status-banner-red"><div class="status-banner-ico">🔴</div><div class="status-banner-body"><h3>Schengen Visa Required — ${userPassport} Passport</h3><div class="status-checks"><div class="status-check" style="color:#991b1b;">✔ Visa Required Before Travel</div><div class="status-check" style="color:#991b1b;">✔ Apply at French Consulate — Biometrics + Documents + €90 Fee</div></div></div></div>`;
+    content.innerHTML = `
+    <div class="info-card">
+      <div class="eyebrow">Why Visit France?</div>
+      <h3>Culture, Heritage &amp; Travel</h3>
+      <p>France offers world-class art, historic landmarks, coastal escapes, and regional cuisine. Whether touring, visiting family, or on a short business trip, it remains one of Europe's most rewarding destinations.</p>
+      <div class="chips"><span class="chip">Eiffel Tower &amp; Paris</span><span class="chip">French Riviera</span><span class="chip">Loire Valley</span><span class="chip">Normandy</span><span class="chip">Bordeaux</span><span class="chip">Alps skiing</span></div>
+    </div>
+    <div class="att-slider">
+      <article class="att-card" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80');"><div class="eyebrow" style="align-self:flex-start;margin-bottom:6px;">Paris</div><h3>Art, culture &amp; iconic landmarks</h3><p>Louvre, Eiffel Tower, Notre-Dame, world-class dining.</p></article>
+      <article class="att-card" style="background-image:url('https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=800&q=80');"><div class="eyebrow" style="align-self:flex-start;margin-bottom:6px;">French Riviera</div><h3>Luxury coast &amp; sun-drenched beaches</h3><p>Nice, Cannes, Monaco — Mediterranean glamour.</p></article>
+      <article class="att-card" style="background-image:url('https://images.unsplash.com/photo-1596436985544-6e048e8a4f37?auto=format&fit=crop&w=800&q=80');"><div class="eyebrow" style="align-self:flex-start;margin-bottom:6px;">Loire Valley</div><h3>Châteaux &amp; French countryside</h3><p>UNESCO-listed valley with fairytale castles and vineyards.</p></article>
+      <article class="att-card" style="background-image:url('https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=800&q=80');"><div class="eyebrow" style="align-self:flex-start;margin-bottom:6px;">Provence</div><h3>Lavender fields &amp; Roman heritage</h3><p>Marseille, Aix-en-Provence, lavender plateaus.</p></article>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:10px;">Authorization Type</div>
+      <div class="auth-type-grid">${['visa','etias','evisa','free'].map(k => {
+        const a = {visa:{icon:'🛂',title:'Schengen Visa Required',desc:'Apply at consulate. Biometrics, documents, €90 fee, 15 working days.'},etias:{icon:'🔵',title:'ETIAS Authorization',desc:'Online pre-travel auth for visa-free nationalities. €7 fee.'},evisa:{icon:'💻',title:'eVisa Required',desc:'Online visa application. No embassy visit required.'},free:{icon:'✅',title:'EU Free Movement',desc:'EU/EEA citizens. No visa, no ETIAS required.'}}[k];
+        const isActive = k === userAuthType;
+        return `<div class="auth-type-card ${isActive?'active':'inactive'}"><div class="auth-card-icon">${a.icon}</div><div class="auth-card-title">${a.title}</div><div class="auth-card-desc">${a.desc}</div>${isActive?'<div class="auth-card-badge">✓ Your Type</div>':''}</div>`;
+      }).join('')}</div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:10px;">Visa Type</div>
+      <div class="visa-cat-grid">${[
+        {l:'A',n:'Airport Transit Visa',t:'International Transit Only',d:'Passage through the international transit zone of a Schengen airport without entering territory.',note:'✈️ Who needs it: Nationals of certain countries transiting Schengen airports.',active:false},
+        {l:'B',n:'Transit Visa (Land/Sea)',t:'Land & Sea Transit · Max 5 Days',d:'Transit through the Schengen Area overland or by sea. Largely replaced by Type C.',note:'🚂 Rarely issued today — check with consulate if required.',active:false},
+        {l:'C',n:'Short-Stay Visa',t:'Most Common · Up to 90 Days',d:'Standard Schengen visa for tourism, business, and family visits.',note:'🌍 This guide covers Type C — what most travellers apply for.',active:true}
+      ].map(c=>`<div class="visa-cat-card ${c.active?'active':'inactive'}"><div class="visa-cat-letter">${c.l}</div><div class="visa-cat-name">${c.n}</div><div class="visa-cat-tag">${c.t}</div><div class="visa-cat-desc">${c.d}</div><div class="visa-cat-note">${c.note}</div>${c.active?'<div class="visa-cat-badge">✓ Your Visa Type</div>':''}</div>`).join('')}</div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:10px;">Entry Types</div>
+      <div class="entry-grid">
+        <div class="entry-card"><div class="entry-badge">1</div><h4>Single Entry</h4><p>Enter once — leaving the Schengen area invalidates the visa.</p></div>
+        <div class="entry-card"><div class="entry-badge">2</div><h4>Double Entry</h4><p>Enter the Schengen area twice within the validity period.</p></div>
+        <div class="entry-card"><div class="entry-badge">M</div><h4>Multiple Entry</h4><p>Enter freely within the visa validity — most flexible option.</p></div>
+      </div>
+      <div class="callout call-blue" style="margin-top:14px;"><strong>How is entry type determined?</strong>The consulate decides entry type based on your travel history, purpose, and application. You can request multiple entry but the final decision rests with the consulate officer.</div>
+    </div>`;
+  }
+}
+
+/* ══ ENTRY & EXIT ══ */
+function renderEntryExit() {
+  const body = document.getElementById('entryExitBody');
+  const title = document.getElementById('entryExitTitle');
+  const desc = document.getElementById('entryExitDesc');
+
+  if (userAuthType === 'free') {
+    title.textContent = 'Travelling to France as an EU/EEA Citizen';
+    desc.textContent = 'As an EU/EEA citizen you enjoy free movement rights. Here is what to know at the border and during your stay.';
+    body.innerHTML = `
+      <div class="callout call-green" style="margin-bottom:18px;"><strong>✅ EU Free Movement Applies</strong>You have the right to enter, reside, and work in France without visa or permit. The 90/180-day rule does not apply to EU/EEA citizens — you may stay indefinitely.</div>
+      <div class="g2">
+        <div class="rule-card"><div class="eyebrow">Entry</div><h3>Arriving in France</h3><ul><li>Show your national ID card or passport at the border. No visa or ETIAS required.</li><li>Biometric passports or national ID cards from EU/EEA states are accepted.</li><li>EU citizens may use dedicated EU lanes at most French airports.</li></ul></div>
+        <div class="rule-card"><div class="eyebrow">Long Stays</div><h3>Staying beyond 3 months</h3><ul><li>No registration requirement for stays under 3 months.</li><li>For stays over 3 months, you may need to register with local authorities.</li><li>You retain the right to remain as long as you meet residence conditions.</li></ul></div>
+        <div class="rule-card"><div class="eyebrow">Documents to Carry</div><h3>Recommended while travelling</h3><ul><li>Valid national ID card or passport (should be in date).</li><li>Keep copies of important documents separately.</li><li>Travel/health insurance recommended even though not required.</li></ul></div>
+        <div class="rule-card"><div class="eyebrow">Cross-Border Travel</div><h3>Moving within Schengen</h3><ul><li>Travel freely throughout the Schengen Area — no border checks between member states.</li><li>Carry your ID at all times as some countries perform random spot checks.</li></ul></div>
+      </div>`;
+  } else {
+    title.textContent = 'Entry and Exit Rules for France';
+    desc.textContent = 'Border-entry and permitted-stay rules for your trip to France and the Schengen area.';
+    body.innerHTML = `
+      <div class="rule-90"><div class="rule-90-ico">⚠️</div><div class="rule-90-body"><h3>The 90/180-Day Rule — Applies Across ALL Schengen Countries</h3><p>You may stay a maximum of <strong>90 days in any rolling 180-day period</strong> across the entire Schengen Area — not just France. Days spent in Germany, Spain, Italy, or any other Schengen country all count toward the same limit.</p></div></div>
+      <div class="g2">
+        <div class="rule-card"><div class="eyebrow">Entry</div><h3>Before you enter</h3><ul><li>Passport must remain valid for at least 3 months beyond your planned Schengen departure.</li><li>Border officers may ask for proof of accommodation, return travel, insurance, or funds.</li><li>A visa does not guarantee admission — final permission is granted at the border.</li></ul></div>
+        <div class="rule-card"><div class="eyebrow">Stay</div><h3>During your trip</h3><ul><li>Short stays are limited to 90 days in any rolling 180-day period across the entire Schengen Area.</li><li>Do not work, study long-term, or change to a non-permitted activity unless authorized.</li><li>Keep copies of your itinerary, bookings, and identity documents while travelling.</li></ul></div>
+        <div class="rule-card"><div class="eyebrow">Exit</div><h3>When leaving France or Schengen</h3><ul><li>Depart before your permitted stay window ends.</li><li>Overstays can affect all future travel approvals and visa decisions.</li><li>Keep evidence of timely exit, especially for complex or multi-country travel.</li></ul></div>
+        <div class="rule-card"><div class="eyebrow">Multi-Country Travel</div><h3>Cross-border movement</h3><ul><li>Time spent in other Schengen countries counts toward the same 90/180-day limit.</li><li>Carry documents relevant to your main destination and onward travel plan.</li><li>The entry type on your visa controls how many times you may re-enter the Schengen Area.</li></ul></div>
+      </div>`;
+  }
+}
+
+/* ══ VISA — FULL 6-STEP PROCESS ══ */
+const STEP_META = [
+  {icon:"🔍",step:"Step 1 of 6",title:"Check requirements & consulate",sub:"Confirm eligibility and locate the correct French Consulate for your US state"},
+  {icon:"📋",step:"Step 2 of 6",title:"Fill the visa application form",sub:"Complete the official Schengen visa application on france-visas.gouv.fr"},
+  {icon:"📁",step:"Step 3 of 6",title:"Prepare your full document pack",sub:"Gather all mandatory and supporting documents organized by category"},
+  {icon:"🏛️",step:"Step 4 of 6",title:"Attend appointment & biometrics",sub:"Submit application, provide biometrics, and pay the visa fee at the French Consulate"},
+  {icon:"⏳",step:"Step 5 of 6",title:"Processing period",sub:"Typically 10–15 working days — respond promptly to any additional requests"},
+  {icon:"✅",step:"Step 6 of 6",title:"Receive decision",sub:"Collect passport with visa stamp — or understand options if refused"}
+];
+
+let mapInited=false, mapInstance=null, mapMarkers=[], activeCard=null;
+let curDocStatus = 'workvis', curDocSub = 0;
+let bioSelected = null;
+let curAppFormTab = 'personal';
+
+function showStep(idx) {
+  const stepNavItems = [
+    {ico:'🔍', lbl:'Requirements & Consulate'},
+    {ico:'📋', lbl:'Application Form'},
+    {ico:'📁', lbl:'Prepare Documents'},
+    {ico:'🏛️', lbl:'Appointment & Biometrics'},
+    {ico:'⏳', lbl:'Processing Period'},
+    {ico:'✅', lbl:'Receive Decision'}
+  ];
+  document.getElementById('stepNav').innerHTML = stepNavItems.map((s, i) =>
+    `<button class="step-tab${i===idx?' active':''}${i<idx?' done':''}" onclick="showStep(${i})">
+      <span class="snum">${i<idx?'✓':(i+1)}</span>
+      <span class="sico">${s.ico}</span>
+      <span class="slbl">${s.lbl}</span>
+    </button>`
+  ).join('');
+
+  const m = STEP_META[idx];
+  document.getElementById("stepCard").innerHTML = `
+    <div class="step-head">
+      <div class="step-head-ico">${m.icon}</div>
+      <div class="step-head-info">
+        <div class="step-label">${m.step}</div>
+        <h3>${m.title}</h3>
+        <p>${m.sub}</p>
+      </div>
+    </div>
+    <div class="step-body" id="stepBody"></div>`;
+  renderStepBody(idx);
+}
+
+function renderStepBody(idx) {
+  const el = document.getElementById("stepBody");
+  if (!el) return;
+  if (idx === 0) renderStep1(el);
+  else if (idx === 1) renderStep2(el);
+  else if (idx === 2) renderStep3(el);
+  else if (idx === 3) renderStep4(el);
+  else if (idx === 4) renderStep5(el);
+  else if (idx === 5) renderStep6(el);
+}
+
+/* ══ ETIAS — SIMPLIFIED 3-STEP ══ */
+const ETIAS_STEP_META = [
+  {icon:"🔍", step:"Step 1 of 3", title:"Check ETIAS Eligibility", sub:"Confirm your nationality qualifies for visa-free travel and ETIAS pre-authorization"},
+  {icon:"💻", step:"Step 2 of 3", title:"Apply Online for ETIAS", sub:"Complete the official ETIAS application — takes about 10 minutes and costs €7"},
+  {icon:"✅", step:"Step 3 of 3", title:"Travel to France", sub:"Receive approval and travel — ETIAS is valid 3 years and covers all Schengen countries"}
+];
+
+function showEtiasStep(idx) {
+  document.getElementById('stepByStepTitle').textContent = 'ETIAS Application — 3 Simple Steps';
+  document.getElementById('stepByStepDesc').textContent = 'Your passport qualifies for visa-free travel to France. You only need a quick online ETIAS authorization before you go.';
+  const etNavItems = [{ico:'🔍', lbl:'Check Eligibility'},{ico:'💻', lbl:'Apply Online'},{ico:'✅', lbl:'Travel'}];
+  document.getElementById('stepNav').innerHTML = etNavItems.map((s, i) =>
+    `<button class="step-tab${i===idx?' active':''}${i<idx?' done':''}" onclick="showEtiasStep(${i})">
+      <span class="snum">${i<idx?'✓':(i+1)}</span>
+      <span class="sico">${s.ico}</span>
+      <span class="slbl">${s.lbl}</span>
+    </button>`
+  ).join('');
+  const m = ETIAS_STEP_META[idx];
+  document.getElementById("stepCard").innerHTML = `
+    <div class="step-head">
+      <div class="step-head-ico">${m.icon}</div>
+      <div class="step-head-info">
+        <div class="step-label">${m.step}</div>
+        <h3>${m.title}</h3>
+        <p>${m.sub}</p>
+      </div>
+    </div>
+    <div class="step-body" id="stepBody"></div>`;
+  const el = document.getElementById('stepBody');
+  if (idx === 0) renderEtiasStep1(el);
+  else if (idx === 1) renderEtiasStep2(el);
+  else if (idx === 2) renderEtiasStep3(el);
+}
+
+function renderEtiasStep1(el) {
+  el.innerHTML = `
+  <div class="g2">
+    <div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Good news — your passport qualifies for visa-free travel to France and the Schengen Area. You do <strong>not</strong> need a visa. You only need a simple online ETIAS authorization before you board.</p>
+      <div class="step-flow">
+        <div class="step-row"><div class="srow-num">1</div><div><h4>Confirm your passport is valid</h4><p>Your passport must be valid for the full duration of your stay.</p></div></div>
+        <div class="step-row"><div class="srow-num">2</div><div><h4>Understand the 90/180-day rule</h4><p>Visa-free travellers may stay up to 90 days in any 180-day rolling period across all Schengen countries combined.</p></div></div>
+        <div class="step-row"><div class="srow-num">3</div><div><h4>ETIAS is required from launch</h4><p>ETIAS is a mandatory pre-travel check for visa-free nationalities. Apply before booking final travel arrangements.</p></div></div>
+      </div>
+      <div class="callout call-blue" style="margin-top:14px;"><strong>🔵 Key Difference: ETIAS vs Visa</strong>ETIAS is not a visa. It is a lightweight security pre-check — similar to the US ESTA. It takes minutes to apply and is valid for 3 years across all Schengen countries.</div>
+    </div>
+    <div>
+      <div style="background:var(--blue-soft);border:1px solid var(--blue-mid);border-radius:14px;padding:18px;">
+        <div style="font-size:14px;font-weight:800;color:var(--blue-text);margin-bottom:14px;">ETIAS at a Glance</div>
+        ${[['💶','Fee','€7 (free for under 18 & over 70)'],['⏱','Processing time','Minutes to a few hours (max 96 hrs)'],['📅','Validity','3 years or until passport expiry'],['🌍','Coverage','All 29 Schengen countries'],['⏰','Max stay','90 days in any 180-day period'],['📱','How to apply','Online only — travel-europe.europa.eu']].map(([ico,k,v])=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--blue-mid);font-size:13px;"><span style="font-size:16px;flex-shrink:0;">${ico}</span><div><div style="font-weight:700;color:var(--text);">${k}</div><div style="color:var(--text2);font-size:12px;">${v}</div></div></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderEtiasStep2(el) {
+  el.innerHTML = `
+  <div class="g2">
+    <div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">The ETIAS application is fully online. No embassy visit, no biometrics, no courier.</p>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">What You Need to Apply</div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:14px;">
+        ${['Valid passport (the one you will travel with)','Email address (for confirmation and communication)','Credit or debit card for €7 fee','Travel dates and accommodation details (if known)','Basic personal and background information'].map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--text2);"><div style="width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>${f}</div>`).join('')}
+      </div>
+      <div class="doc-alert-b">📝 The application asks background questions (criminal record, travel history, health). Answer honestly — most are simple yes/no questions.</div>
+      <div style="margin-top:14px;"><a href="https://travel-europe.europa.eu/etias_en" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a56db,#0ea5a0);color:#fff;padding:13px 26px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;width:100%;justify-content:center;">Apply for ETIAS at travel-europe.europa.eu →</a></div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Step-by-Step Online Application</div>
+      ${[['Create your application','Visit the official ETIAS website and select your nationality and destination.'],['Fill in personal details','Name, date of birth, passport number, contact details, and travel information.'],['Answer background questions','Security and health-related questions — straightforward for most applicants.'],['Pay €7 fee','By credit or debit card. Fee is waived for under 18 and over 70.'],['Submit and wait','Most decisions arrive within minutes. Check your email for the result.']].map(([t,d],i)=>`<div style="display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0;">${i+1}</div><div><div style="font-size:13px;font-weight:700;color:var(--text);">${t}</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">${d}</div></div></div>`).join('')}
+      <div class="doc-alert-a">⚠️ Apply well before your travel date. In rare cases, applications can take up to 30 days if additional review is needed.</div>
+    </div>
+  </div>`;
+}
+
+function renderEtiasStep3(el) {
+  el.innerHTML = `
+  <div class="g2">
+    <div style="background:var(--green-soft);border:1.5px solid var(--green-bdr);border-radius:13px;padding:16px;">
+      <div style="font-size:15px;font-weight:700;color:#065f46;margin-bottom:12px;">✅ ETIAS Approved — Ready to Travel</div>
+      ${['Your ETIAS is linked to your passport — no need to print anything','Present your passport at the French border — ETIAS is checked electronically','You may enter any of the 29 Schengen countries on the same authorization','ETIAS is valid for 3 years or until your passport expires','You may stay up to 90 days in any 180-day period across all Schengen countries','Keep your travel insurance valid for the full duration of your stay'].map(d=>`<div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#166534;margin-bottom:7px;line-height:1.45;"><span style="color:var(--green);font-weight:700;flex-shrink:0;">→</span>${d}</div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:10px;">At the French Border</div>
+      ${[['🛂','Show your passport','Border officers scan your biometric passport. ETIAS approval is checked automatically — no paper required.'],['💼','Have documents available','Bring proof of accommodation, return travel, and sufficient funds.'],['⏰','Respect the 90-day limit','Your ETIAS authorizes entry — but how long you can stay is governed by the 90/180-day rule.']].map(([ico,t,d])=>`<div style="background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:8px;display:flex;gap:10px;"><span style="font-size:18px;flex-shrink:0;">${ico}</span><div><div style="font-size:13px;font-weight:700;color:var(--text);">${t}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">${d}</div></div></div>`).join('')}
+      <div class="callout call-amber" style="margin-top:6px;"><strong>⚠️ ETIAS ≠ Guaranteed Entry</strong>ETIAS authorization does not guarantee admission. Final entry permission is always at the discretion of the border officer.</div>
+    </div>
+  </div>`;
+}
+
+/* ── STEP 1 (VISA) — STATE SELECTOR TOP, THEN MAP ── */
+function renderStep1(el) {
+  el.innerHTML = `
+  <div style="background:linear-gradient(135deg,#f0f4fb,#e8f0ff);border:1.5px solid var(--blue-mid);border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--blue-text);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">📍 Find Your Assigned Consulate — Select Your State First</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:7px;">Your US State of Legal Residence</label>
+        <select class="state-select" id="stateSelect" onchange="onStateSelect()" style="width:100%;">
+          <option value="">— Select your state —</option>
+          ${US_STATES.map(s=>`<option value="${s}">${s}</option>`).join('')}
+        </select>
+        <div class="callout call-amber" style="margin-top:10px;font-size:12px;"><strong>⚠️ Apply to the Right Consulate</strong>You must apply to the French Consulate covering your state of <em>legal</em> US residence — not where you work or where you are currently visiting.</div>
+      </div>
+      <div id="assignedConsulate" class="assigned-consulate" style="margin-top:0;"></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">Eligibility Checklist</div>
+      <div class="step-flow">
+        <div class="step-row"><div class="srow-num">1</div><div><h4>Confirm eligibility</h4><p>Your US immigration status must be valid. Check I-94 at cbp.gov, verify visa stamp expiry, and confirm I-797/I-20 is current.</p></div></div>
+        <div class="step-row"><div class="srow-num">2</div><div><h4>Apply to the correct consulate</h4><p>French Consulates cover specific US states. Applying to the wrong jurisdiction leads to automatic rejection. Use the state selector above.</p></div></div>
+        <div class="step-row"><div class="srow-num">3</div><div><h4>Book your appointment early</h4><p>Appointments fill quickly — especially May through August. Book at least 4–6 weeks before your intended travel date.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">French Consulates in the USA</div>
+      <div id="consulateMap"></div>
+      <div style="margin-top:10px;">
+        <div class="map-pills">
+          <button class="mpill active" onclick="filterMap('all',this)">All</button>
+          <button class="mpill" onclick="filterMap('northeast',this)">Northeast</button>
+          <button class="mpill" onclick="filterMap('midwest',this)">Midwest</button>
+          <button class="mpill" onclick="filterMap('south',this)">South</button>
+          <button class="mpill" onclick="filterMap('west',this)">West</button>
+        </div>
+        <p id="mapCount" style="font-size:12px;color:var(--muted);margin-bottom:8px;">Showing all 8 consulates</p>
+        <div id="mapSidebar"></div>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(initMap, 200);
+}
+
+function onStateSelect() {
+  const state = document.getElementById('stateSelect').value;
+  const box = document.getElementById('assignedConsulate');
+  if (!state) { box.className = 'assigned-consulate'; return; }
+  const c = getConsulateByState(state);
+  if (c) {
+    box.className = 'assigned-consulate show';
+    box.innerHTML = `<div class="ac-label">📍 Your Assigned French Consulate</div><div class="ac-name">${c.icon} French Consulate General — ${c.city}, ${c.state}</div><div class="ac-addr">${c.addr}</div><div style="font-size:11px;color:var(--blue-text);margin-top:4px;">⏰ ${c.hours}</div>`;
+  } else {
+    box.className = 'assigned-consulate show';
+    box.innerHTML = `<div class="ac-label">Check Directly</div><div class="ac-name">Contact the nearest French Consulate for jurisdiction info</div>`;
+  }
+}
+
+/* ── STEP 2 (VISA) — LEFT NAV + RIGHT CONTENT ── */
+function renderStep2(el) {
+  curAppFormTab = 'personal';
+  el.innerHTML = `
+  <div class="app-form-shell">
+    <nav class="app-form-nav">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding:4px 12px 8px;border-bottom:1px solid var(--line);margin-bottom:4px;">Form Sections</div>
+      <button class="app-form-btn active" id="appbtn-personal" onclick="setAppFormTab('personal')">👤 Personal Details</button>
+      <button class="app-form-btn" id="appbtn-travel" onclick="setAppFormTab('travel')">✈️ Travel Details</button>
+      <button class="app-form-btn" id="appbtn-financial" onclick="setAppFormTab('financial')">💰 Financial &amp; Stay Info</button>
+    </nav>
+    <div class="app-form-content">
+      <div class="app-panel active" id="app-personal">
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px;">👤 Personal Details</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Your identity and contact information as it appears on your passport</div>
+        ${[['Full legal name','As printed on your passport — no nicknames'],['Date of birth','As on your passport'],['Place of birth','City and country'],['Nationality','As per your passport'],['Gender','As per your passport'],['Marital status','Single, married, divorced, etc.'],['National identity number','If applicable in your country'],['Current US address','Full street address, city, state, zip'],['Phone number','Active number you will answer'],['Email address','One you check regularly during processing'],['Occupation','Your job title or student/retired etc.'],['Employer / school name','Company or university name']].map(([f,h])=>`<div style="padding:9px 0;border-bottom:1px solid #f0f4fb;"><div style="font-size:13px;font-weight:700;color:var(--text);">${f}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${h}</div></div>`).join('')}
+        <div class="doc-alert-b" style="margin-top:12px;">📝 All personal details must exactly match your passport. Any discrepancy is a rejection reason.</div>
+      </div>
+      <div class="app-panel" id="app-travel">
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px;">✈️ Travel Details</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Your intended trip to France — must match your bookings and itinerary exactly</div>
+        ${[['Purpose of travel','Tourism, business, family visit, transit, etc.'],['Intended entry date','First day you plan to enter the Schengen Area'],['Intended exit date','Last day — must be within visa validity and 90-day limit'],['Main destination country','France — the country issuing the visa'],['First entry point','Airport or border crossing where you will enter'],['Number of entries requested','Single, double, or multiple — explain if requesting multiple'],['Countries to be visited','France only, or other Schengen countries on the same trip'],['Previous Schengen visas','Country, date, and number of entries if held before']].map(([f,h])=>`<div style="padding:9px 0;border-bottom:1px solid #f0f4fb;"><div style="font-size:13px;font-weight:700;color:var(--text);">${f}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${h}</div></div>`).join('')}
+        <div class="doc-alert-a" style="margin-top:12px;">⚠️ Dates on the application form, flight itinerary, hotel booking, and insurance must all match exactly. Any inconsistency flags the file for rejection.</div>
+      </div>
+      <div class="app-panel" id="app-financial">
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px;">💰 Financial &amp; Stay Info</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">How you will fund your trip and where you will stay</div>
+        ${[['Accommodation address in France','Hotel address, or host\'s address if staying with someone'],['Accommodation type','Hotel, Airbnb, private host, hostel, etc.'],['Host name and contact (if staying privately)','Name, address, and phone of person hosting you'],['Who covers your trip costs','You, employer, sponsor, family member'],['Name of financial sponsor (if other than yourself)','Full name and relationship to you'],['Travel insurance policy number','Insurance document reference number'],['Insurance company name','Must cover Schengen area to minimum €30,000'],['Bank name (if self-funding)','Where your funds are held'],['Return transport details','Return flight booking reference or equivalent']].map(([f,h])=>`<div style="padding:9px 0;border-bottom:1px solid #f0f4fb;"><div style="font-size:13px;font-weight:700;color:var(--text);">${f}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${h}</div></div>`).join('')}
+        <div class="doc-alert-b" style="margin-top:12px;">💡 After completing the online form at <strong>france-visas.gouv.fr</strong>, print and sign it. Take the signed printout to your appointment along with your full document pack.</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setAppFormTab(key) {
+  curAppFormTab = key;
+  ['personal','travel','financial'].forEach(k => {
+    const btn = document.getElementById('appbtn-'+k);
+    const panel = document.getElementById('app-'+k);
+    if (btn) btn.classList.toggle('active', k===key);
+    if (panel) panel.classList.toggle('active', k===key);
+  });
+}
+
+/* ── STEP 3 (VISA) ── */
+const DOC_STATUSES = [
+  {key:'greencard', label:'Green Card'},
+  {key:'student', label:'Student (F1/J1)'},
+  {key:'workvis', label:'Work Visa (H1B/L1/O1)'},
+  {key:'dependent', label:'Dependents (H4/F2/L2)'},
+  {key:'opt', label:'OPT / STEM OPT'},
+  {key:'retired', label:'Retired'},
+  {key:'other', label:'Others'}
+];
+const DOC_SUBS = [
+  {ico:'🛂', label:'Gather Identity Docs'},
+  {ico:'📑', label:'US Immigration Docs'},
+  {ico:'✈️', label:'Travel Documents'},
+  {ico:'💰', label:'Financial Proof'},
+  {ico:'✍️', label:'Cover Letter'},
+  {ico:'✅', label:'Review Complete File'}
+];
+
+function renderStep3(el) {
+  el.innerHTML = `
+  <div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Select Your Immigration Status</div>
+    <div class="status-filter-bar" id="statusFilterBar">
+      ${DOC_STATUSES.map(s=>`<button class="status-ftab${s.key===curDocStatus?' active':''}" onclick="setDocStatus('${s.key}')">${s.label}</button>`).join('')}
+    </div>
+    <div class="doc-prep-shell">
+      <nav class="doc-sub-nav" id="docSubNav">
+        ${DOC_SUBS.map((s,i)=>`<button class="doc-sub-btn${i===curDocSub?' active':''}${i<curDocSub?' done':''}" onclick="setDocSub(${i})"><span class="doc-sub-num">${i<curDocSub?'✓':(i+1)}</span><span>${s.ico} ${s.label}</span></button>`).join('')}
+      </nav>
+      <div class="doc-content-area" id="docContentArea"></div>
+    </div>
+  </div>`;
+  renderDocContent();
+}
+
+function setDocStatus(key) {
+  curDocStatus = key;
+  document.querySelectorAll('.status-ftab').forEach(b => b.classList.toggle('active', b.textContent.trim() === DOC_STATUSES.find(s=>s.key===key).label));
+  renderDocContent();
+}
+function setDocSub(idx) {
+  curDocSub = idx;
+  document.querySelectorAll('.doc-sub-btn').forEach((b,i) => {
+    b.classList.toggle('active', i===idx);
+    b.classList.toggle('done', i<idx);
+    b.querySelector('.doc-sub-num').textContent = i < idx ? '✓' : (i+1);
+  });
+  renderDocContent();
+}
+
+function renderDocContent() {
+  const area = document.getElementById('docContentArea');
+  if (!area) return;
+  const s = curDocStatus;
+  const sub = curDocSub;
+
+  if (sub === 0) {
+    area.innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;">🛂 Identity Documents</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Required for all applicants regardless of status</div>
+    <div class="doc-row"><span class="doc-row-ico">🛂</span><span><strong>Valid Passport</strong> — Valid for 3+ months after return date, issued within last 10 years, minimum 2 blank visa pages. Submit photocopy of biographic data page.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">📸</span><span><strong>2 Passport Photos</strong> — 35mm × 45mm, plain white background, taken within last 6 months, no glasses.</span></div>
+    <div style="margin-top:10px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">Photo Specifications</div>
+      <div class="photo-grid">
+        <div class="photo-spec"><strong>Size</strong>35mm × 45mm</div>
+        <div class="photo-spec"><strong>Background</strong>Plain white only</div>
+        <div class="photo-spec"><strong>Face</strong>70–80% of frame</div>
+        <div class="photo-spec"><strong>Recency</strong>Last 6 months</div>
+        <div class="photo-spec"><strong>Restrictions</strong>No glasses</div>
+        <div class="photo-spec"><strong>Print</strong>Photo paper</div>
+      </div>
+    </div>`;
+  } else if (sub === 1) {
+    const docsMap = {
+      greencard: [
+        {ico:'🪪', t:'Green Card', d:'Both front and back copy (photocopy + original to show)'},
+        {ico:'🏠', t:'State ID or Driver\'s License', d:'Proof of your US address'}
+      ],
+      student: [
+        {ico:'📄', t:'Valid F1 or J1 Visa Stamp', d:'In passport — must not be expired'},
+        {ico:'📑', t:'I-20 (F1) or DS-2019 (J1)', d:'Must have valid DSO/sponsor signature from the last 6 months'},
+        {ico:'🔴', t:'I-94 Printout — MANDATORY', d:'Download at cbp.gov/i94 — print the full page'},
+        {ico:'🏫', t:'Current Enrollment Verification Letter', d:'From university Registrar confirming active student status and expected graduation date'}
+      ],
+      workvis: [
+        {ico:'📄', t:'Valid Work Visa Stamp', d:'H1B, L1, O1, TN — in passport'},
+        {ico:'📑', t:'I-797 Approval Notice — MANDATORY', d:'Most recent approval including any extensions'},
+        {ico:'🔴', t:'I-94 Printout — MANDATORY', d:'From cbp.gov'},
+        {ico:'📋', t:'Employment Verification Letter', d:'On company letterhead, signed by HR, confirming role, salary, employment dates, and approved leave'},
+        {ico:'💵', t:'Last 3 Months Pay Stubs', d:'Showing employer name and salary'}
+      ],
+      dependent: [
+        {ico:'📄', t:'Valid Dependent Visa Stamp', d:'H4, F2, or L2 — in your own passport'},
+        {ico:'🔴', t:'I-94 Printout — MANDATORY', d:'Your own I-94, not the primary holder\'s'},
+        {ico:'📑', t:'Primary Visa Holder\'s Documents', d:'Copy of their I-797, I-20, or Green Card'},
+        {ico:'💍', t:'Relationship Proof', d:'Marriage certificate (spouse) or birth certificate (child)'}
+      ],
+      opt: [
+        {ico:'🪪', t:'Valid EAD Card', d:'Employment Authorization Document — must be unexpired'},
+        {ico:'📑', t:'I-20 with OPT Endorsement', d:'DSO-signed, showing authorized OPT period dates'},
+        {ico:'🔴', t:'I-94 Printout — MANDATORY', d:'From cbp.gov'},
+        {ico:'💼', t:'Employment Offer or Employer Letter', d:'Confirming your OPT job and position (if employed)'}
+      ],
+      retired: [
+        {ico:'🧾', t:'Proof of Retirement Income', d:'Pension statements, Social Security award letter, or equivalent retirement income documentation'},
+        {ico:'🏦', t:'Bank Statements — Last 3 Months', d:'Showing consistent pension deposits and sufficient balance for the trip'},
+        {ico:'🏠', t:'Proof of US Residence', d:'Utility bills, lease, mortgage statement, or other document confirming your address'},
+        {ico:'🪪', t:'State ID or Driver\'s License', d:'Government-issued US ID confirming your identity and address'},
+        {ico:'📄', t:'US Passport (or Green Card if applicable)', d:'Valid travel document — no immigration status document required for US citizens or Green Card holders'}
+      ],
+      other: [
+        {ico:'📄', t:'Valid US Immigration Status Document', d:'Whatever document proves your current legal status in the USA'},
+        {ico:'🔴', t:'I-94 Printout — MANDATORY', d:'Download from cbp.gov — required for all non-immigrant visa holders'},
+        {ico:'📋', t:'Supporting Status Documents', d:'Any additional documents that confirm your current authorized stay'}
+      ]
+    };
+    const docs = docsMap[s] || docsMap['other'];
+    const warnings = {
+      opt: `<div class="doc-alert-a" style="margin-top:10px;">⚠️ Apply well before OPT expiry. Do not apply if in or near the 60-day grace period. Consult an immigration attorney first.</div>`,
+      student: `<div class="doc-alert-b" style="margin-top:10px;">💡 Travel signatures on I-20 must be from within the last 6 months. Get a fresh travel signature from your DSO before applying.</div>`,
+      retired: `<div class="doc-alert-b" style="margin-top:10px;">💡 As a retired US citizen or permanent resident, there is no work visa or I-94 requirement. Focus on showing stable income and strong ties to the US (home, family, pension).</div>`
+    }[s] || '';
+    const needsI94 = ['student','workvis','dependent','opt','other'].includes(s);
+    area.innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;">📑 US Immigration Documents</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Required for <strong>${DOC_STATUSES.find(x=>x.key===s).label}</strong></div>
+    ${needsI94 ? `<div class="doc-alert-r">🔴 <strong>I-94 is the most frequently missed document.</strong> Almost all non-immigrant visa holders must include a current I-94 printout from cbp.gov. Missing it causes rejection — treat it as mandatory.</div>` : ''}
+    ${docs.map(d=>`<div class="doc-row"><span class="doc-row-ico">${d.ico}</span><span><strong>${d.t}</strong> — ${d.d}</span></div>`).join('')}
+    ${warnings}
+    <div style="margin-top:12px;font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">Additional Supporting Residency Proof</div>
+    <div class="supp-grid">
+      <div class="supp-item">🚗 US Driver's License</div>
+      <div class="supp-item">🏠 Utility Bills (last 2 months)</div>
+      <div class="supp-item">📝 Signed Lease / Rental Agreement</div>
+      <div class="supp-item">🏦 Bank Statement with US Address</div>
+      <div class="supp-item">📬 Official mail (tax notices, insurance)</div>
+      <div class="supp-item">🏥 Health insurance card/statement</div>
+    </div>`;
+  } else if (sub === 2) {
+    area.innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;">✈️ Travel Documents</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Passport, flight reservation, accommodation, and mandatory travel insurance</div>
+    <div class="doc-row"><span class="doc-row-ico">🛫</span><span><strong>Flight Itinerary</strong> — A dummy reservation (not a purchased ticket) is acceptable. Do NOT buy non-refundable tickets before visa approval.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">🏨</span><span><strong>Accommodation Proof</strong> — Refundable hotel reservation for all nights, or invitation letter from a host in France. Airbnb acceptable — keep it refundable.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">🏥</span><span><strong>Travel Insurance — Minimum €30,000</strong> — Must cover ALL Schengen countries for your entire trip. US domestic insurance (Blue Cross, Aetna) is NOT accepted.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">📋</span><span><strong>Day-by-Day Itinerary</strong> — Arrival/departure dates, accommodation, cities to visit, key activities, and emergency contact in France.</span></div>
+    <div style="margin-top:10px;font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">Recommended Insurance Providers</div>
+    <div class="insure-chips"><span class="insure-chip">AXA Schengen</span><span class="insure-chip">Allianz Travel</span><span class="insure-chip">IATI Insurance</span><span class="insure-chip">Europ Assistance</span><span class="insure-chip">Battleface</span></div>
+    <div class="doc-alert-a">⚠️ Ensure the policy explicitly states "Schengen area" coverage. Typical cost: $25–$60 for a 2-week trip.</div>`;
+  } else if (sub === 3) {
+    const finPanelContent = {
+      salaried: `<div class="doc-row"><span class="doc-row-ico">🏦</span><span><strong>Last 3 months bank statements</strong> — All pages, showing consistent balance and transaction history.</span></div><div class="doc-row"><span class="doc-row-ico">📋</span><span><strong>Employment Verification Letter</strong> — On company letterhead confirming role, salary, and approved leave period.</span></div><div class="doc-row"><span class="doc-row-ico">💵</span><span><strong>Last 3 Months Pay Stubs</strong> — Showing employer name and consistent income.</span></div><div class="doc-row"><span class="doc-row-ico">📑</span><span><strong>Tax Returns / W-2</strong> — Last 1–2 years for stronger financial background.</span></div><div class="doc-alert-b">💡 Avoid sudden large deposits before applying — they appear fabricated and raise red flags.</div>`,
+      selfemployed: `<div class="doc-row"><span class="doc-row-ico">🏢</span><span><strong>Business Registration Documents</strong> — Proof your business is registered and active in the USA.</span></div><div class="doc-row"><span class="doc-row-ico">🏦</span><span><strong>Business Bank Statements</strong> — Last 3 months showing regular income and healthy balance.</span></div><div class="doc-row"><span class="doc-row-ico">📑</span><span><strong>Tax Returns</strong> — Last 2 years showing your declared income.</span></div><div class="doc-row"><span class="doc-row-ico">📋</span><span><strong>Self-Declaration Letter</strong> — Explaining your business, why it requires your return, and your financial capacity for the trip.</span></div>`,
+      sponsored: `<div class="doc-row"><span class="doc-row-ico">📝</span><span><strong>Sponsor Letter</strong> — Signed statement that the sponsor is covering all travel, accommodation, and daily expenses.</span></div><div class="doc-row"><span class="doc-row-ico">🏦</span><span><strong>Sponsor's Bank Statements</strong> — Last 3 months showing sufficient funds.</span></div><div class="doc-row"><span class="doc-row-ico">📋</span><span><strong>Sponsor's Employment Proof</strong> — Letter or pay stubs confirming their income.</span></div>`,
+      studentin: `<div class="doc-row"><span class="doc-row-ico">🏦</span><span><strong>Personal Bank Statements</strong> — Last 3 months showing available funds for the trip.</span></div><div class="doc-row"><span class="doc-row-ico">🎓</span><span><strong>Scholarship / Fellowship Award Letter</strong> — If receiving funding, include the award letter showing amount.</span></div><div class="doc-row"><span class="doc-row-ico">📝</span><span><strong>Parental/Guardian Support Letter</strong> — If parents are sponsoring, include their bank statements and a signed support letter.</span></div><div class="doc-alert-a">⚠️ Students should show they have sufficient funds specifically set aside for this trip.</div>`,
+      retired: `<div class="doc-row"><span class="doc-row-ico">🧾</span><span><strong>Pension / Retirement Benefit Statements</strong> — Last 3 months showing regular pension income deposits.</span></div><div class="doc-row"><span class="doc-row-ico">📋</span><span><strong>Social Security Award Letter</strong> — Or equivalent retirement benefit confirmation document.</span></div><div class="doc-row"><span class="doc-row-ico">🏦</span><span><strong>Bank Statements — Last 3 Months</strong> — Showing consistent pension credits and sufficient balance.</span></div><div class="doc-row"><span class="doc-row-ico">📑</span><span><strong>Investment/Savings Account Statements</strong> — If you hold savings, IRAs, or investment accounts, include recent statements.</span></div><div class="doc-alert-b">💡 Retired applicants generally have straightforward financial profiles. Show consistent pension income and a stable balance. No pay stubs are needed.</div>`,
+      other: `<div class="doc-row"><span class="doc-row-ico">🏦</span><span><strong>Bank Statements</strong> — Last 3 months, all pages showing your financial capacity.</span></div><div class="doc-row"><span class="doc-row-ico">📋</span><span><strong>Income Documentation</strong> — Any proof of income relevant to your situation (rental income, investments, pension, etc.).</span></div><div class="doc-alert-b">💡 Explain your financial situation clearly in your cover letter if it doesn't fit standard categories.</div>`
+    };
+    area.innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;">💰 Financial Proof</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Financial evidence to show you can cover your trip</div>
+    <div class="fin-tabs">
+      <button class="fin-tab${['greencard','workvis','dependent'].includes(s)?' active':''}" onclick="setFinTab('salaried',this)">Salaried</button>
+      <button class="fin-tab" onclick="setFinTab('selfemployed',this)">Self-Employed</button>
+      <button class="fin-tab" onclick="setFinTab('sponsored',this)">Sponsored</button>
+      <button class="fin-tab${s==='student'||s==='opt'?' active':''}" onclick="setFinTab('studentin',this)">Student / OPT</button>
+      <button class="fin-tab${s==='retired'?' active':''}" onclick="setFinTab('retired',this)">Retired</button>
+      <button class="fin-tab" onclick="setFinTab('other',this)">Others</button>
+    </div>
+    <div id="finPanels">
+      <div class="fin-panel${['greencard','workvis','dependent'].includes(s)?' active':''}" id="fin-salaried">${finPanelContent.salaried}</div>
+      <div class="fin-panel" id="fin-selfemployed">${finPanelContent.selfemployed}</div>
+      <div class="fin-panel" id="fin-sponsored">${finPanelContent.sponsored}</div>
+      <div class="fin-panel${s==='student'||s==='opt'?' active':''}" id="fin-studentin">${finPanelContent.studentin}</div>
+      <div class="fin-panel${s==='retired'?' active':''}" id="fin-retired">${finPanelContent.retired}</div>
+      <div class="fin-panel" id="fin-other">${finPanelContent.other}</div>
+    </div>`;
+  } else if (sub === 4) {
+    area.innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;">✍️ Cover Letter — Your Most Important Document</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">A well-written cover letter proactively addresses the embassy's concerns. Tell your story clearly and honestly.</div>
+    <div class="callout call-amber" style="margin-bottom:14px;"><strong>⭐ This is Critically Important</strong>The cover letter is often the deciding factor for borderline cases. Don't skip it — write it with care.</div>
+    <div class="doc-row"><span class="doc-row-ico">✍️</span><span><strong>Purpose of your trip to France</strong> — Be specific. "Tourism" is vague; "visiting the Eiffel Tower, Louvre, and staying in Paris for 7 nights" is much better.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">📅</span><span><strong>Exact travel dates and duration</strong> — Must match your flight itinerary and hotel bookings exactly.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">💼</span><span><strong>Your employment / student / retirement status in the USA</strong> — Confirm your position, employer/university, or retired status and that you have strong reasons to return.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">🏠</span><span><strong>Your home situation in the USA</strong> — Signed lease, owned property, family members, regular obligations.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">🔄</span><span><strong>Explicit statement of intent to return</strong> — State clearly you will return to the USA before the visa expires and why.</span></div>
+    <div class="doc-row"><span class="doc-row-ico">👨‍👩‍👧</span><span><strong>Family ties or obligations in the USA</strong> — Spouse, children, parents, dependents who remain in the USA.</span></div>
+    <div style="margin-top:14px;">
+      <div class="ties-grid">
+        <div class="ties-card ties-strong"><div class="ties-title">💪 Strong Ties — Include These</div><div class="ties-item"><span class="tdot" style="background:var(--green)"></span>Full-time employment with leave approval</div><div class="ties-item"><span class="tdot" style="background:var(--green)"></span>Pension income, retirement assets, property</div><div class="ties-item"><span class="tdot" style="background:var(--green)"></span>Signed lease or mortgage on US property</div><div class="ties-item"><span class="tdot" style="background:var(--green)"></span>Spouse, children, or parents in the USA</div><div class="ties-item"><span class="tdot" style="background:var(--green)"></span>Long-term US residency history</div></div>
+        <div class="ties-card ties-weak"><div class="ties-title">⚠️ Weak Ties — Compensate For</div><div class="ties-item"><span class="tdot" style="background:var(--amber)"></span>Unemployed or between jobs</div><div class="ties-item"><span class="tdot" style="background:var(--amber)"></span>No family members in the USA</div><div class="ties-item"><span class="tdot" style="background:var(--amber)"></span>No fixed address / living with friends</div><div class="ties-item"><span class="tdot" style="background:var(--amber)"></span>Recently graduated, not yet employed</div></div>
+      </div>
+    </div>`;
+  } else if (sub === 5) {
+    area.innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;">✅ Review Your Complete File</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Cross-check everything before your appointment day. This is your final quality control.</div>
+    <ul class="check-list">
+      <li><span class="ck">✓</span>Original passport + clear photocopies</li>
+      <li><span class="ck">✓</span>Completed &amp; signed visa application form (printed from france-visas.gouv.fr)</li>
+      <li><span class="ck">✓</span>2 recent passport photos (35×45mm, white background)</li>
+      <li><span class="ck">✓</span>All US immigration documents — originals + copies</li>
+      <li><span class="warn">⚠</span>I-94 printout from cbp.gov — the most commonly forgotten item (not needed for Green Card holders / retired US citizens)</li>
+      <li><span class="ck">✓</span>Schengen travel insurance certificate (min €30,000, full trip coverage)</li>
+      <li><span class="ck">✓</span>Hotel/accommodation bookings (refundable)</li>
+      <li><span class="ck">✓</span>Return flight itinerary/confirmation (dummy booking)</li>
+      <li><span class="ck">✓</span>Last 3 months bank statements (all pages)</li>
+      <li><span class="ck">✓</span>Employment/pension/income verification + supporting financial docs</li>
+      <li><span class="ck">✓</span>Cover letter — written, printed, signed</li>
+      <li><span class="ck">✓</span>All dates match across application, bookings, and insurance</li>
+      <li><span class="ck">✓</span>Passport name matches all submitted documents</li>
+    </ul>
+    <div class="callout call-green" style="margin-top:14px;"><strong>✅ You're Ready to Submit</strong>If every item above is checked, your file is well-organized and complete. Head to your appointment with confidence.</div>`;
+  }
+}
+
+function setFinTab(key, btn) {
+  document.querySelectorAll('.fin-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.fin-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const panel = document.getElementById('fin-' + key);
+  if (panel) panel.classList.add('active');
+}
+
+/* ── STEP 4 (VISA) — UPDATED FEE TABLE ── */
+function renderStep4(el) {
+  el.innerHTML = `
+  <div class="g2">
+    <div>
+      <div class="bio-question">
+        <div class="bio-q-title">🫱 Have you given biometrics for a Schengen visa in the last 5 years?</div>
+        <div class="bio-q-sub">This determines whether you need to provide fingerprints and a photo at your appointment.</div>
+        <div class="bio-btn-row">
+          <button class="bio-btn${bioSelected==='yes'?' selected-yes':''}" id="bioYes" onclick="setBio('yes')">✅ Yes — I have</button>
+          <button class="bio-btn${bioSelected==='no'?' selected-no':''}" id="bioNo" onclick="setBio('no')">❌ No — First time</button>
+        </div>
+        <div class="bio-result bio-result-yes${bioSelected==='yes'?' show':''}" id="bioResultYes">
+          <strong>✅ Biometrics May Not Be Required Again</strong><br>
+          If your biometrics are still on record from a previous Schengen visa within the last 59 months, you may be exempt from providing them again. However, the consulate will verify this — bring all documents and be prepared just in case.
+        </div>
+        <div class="bio-result bio-result-no${bioSelected==='no'?' show':''}" id="bioResultNo">
+          <strong>📸 Biometrics Required at Your Appointment</strong><br>
+          You will need to provide: 10 fingerprint scans + digital photo. This takes approximately 10 minutes and is done at the consulate or visa application center. Biometrics are stored for 59 months in the Schengen database.
+        </div>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Documents to Carry to Appointment</div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px;">
+        ${['Original passport + clear photocopies','Completed & signed visa application form','2 recent passport-sized photographs','All supporting documents — originals + copies','Schengen travel insurance certificate','Hotel/accommodation bookings','Return flight itinerary/confirmation','Last 3 months bank statements','Employment / pension verification documents','I-94 printout from cbp.gov (if applicable)','I-797/I-20/Green Card as applicable','Cover letter'].map(d=>`<div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--line);line-height:1.4;"><span style="color:var(--green);font-weight:700;flex-shrink:0;">✓</span>${d}</div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">💶 Official Visa Fee Schedule</div>
+      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:4px;">
+        <table class="fee-tbl">
+          <thead>
+            <tr>
+              <th style="width:34%">Visa Category</th>
+              <th style="width:17%">Full Rate</th>
+              <th style="width:17%">Reduced Rate</th>
+              <th style="width:32%">Free of Charge</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Schengen Visa &amp; Airport Transit Visa</strong></td>
+              <td><span class="fee-full">€90</span></td>
+              <td><span class="fee-reduced">€45</span><div style="font-size:10px;color:var(--muted);margin-top:2px;">Children age 6–12</div></td>
+              <td style="font-size:11px;">Children under 6 · Foreign spouse of French national · EU/EEA/Swiss family members · Other cases: see country-specific pages</td>
+            </tr>
+            <tr>
+              <td><strong>Short-Stay Visa for Overseas Territories</strong><div style="font-size:10px;color:var(--muted);margin-top:1px;">Guadeloupe, French Guiana, Martinique, Réunion, Saint-Martin, Saint-Barthélemy</div></td>
+              <td><span class="fee-full">€60</span></td>
+              <td><span class="fee-reduced">€35</span><div style="font-size:10px;color:var(--muted);margin-top:2px;">Children age 6–12</div></td>
+              <td style="font-size:11px;">Children under 6 · Foreign spouse of French national · EU/EEA/Swiss family members</td>
+            </tr>
+            <tr>
+              <td><strong>Long-Stay Visa</strong><div style="font-size:10px;color:var(--muted);margin-top:1px;">For stays over 90 days</div></td>
+              <td><span class="fee-full">€99</span></td>
+              <td><span class="fee-reduced">€50</span></td>
+              <td style="font-size:11px;">Foreign spouse of French national · Other cases: see country-specific pages</td>
+            </tr>
+            <tr>
+              <td><strong>Adopted Child Visa</strong></td>
+              <td><span class="fee-full">€15</span></td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong>Short-Stay Visa — Collectivités d'Outre-Mer</strong><div style="font-size:10px;color:var(--muted);margin-top:1px;">New Caledonia, French Polynesia, Wallis &amp; Futuna, Saint Pierre &amp; Miquelon, Mayotte, French Southern &amp; Antarctic Lands</div></td>
+              <td><span class="fee-full">€9</span></td>
+              <td>—</td>
+              <td style="font-size:11px;">Foreign spouse of French national · EU/EEA/Swiss family members</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fee-note-red">⚠️ <strong>Note:</strong> Visa fees are subject to change at any time at the discretion of the French Embassy and consulate network. Always verify the current fee directly with your assigned French Consulate or on france-visas.gouv.fr before your appointment.</div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px;margin-top:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Additional Charges (may apply)</div>
+        ${[['Service center charge','$25–$50 (if using VFS or TLScontact)'],['Optional courier return','~$20'],['Premium appointment (optional)','Varies by service center'],['Biometric capture fee','Included in consulate fee']].map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px;"><span style="color:var(--muted);">${k}</span><span style="font-weight:700;color:var(--blue);">${v}</span></div>`).join('')}
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px;margin-top:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Tips for Appointment Day</div>
+        ${['Arrive 10–15 minutes early','Carry documents in a clear organized folder','Payment may be cash-only — verify with your consulate','Keep your phone silent inside','Photograph all documents before handing them over','Ask for your reference number and receipt'].map(d=>`<div style="display:flex;gap:7px;font-size:12px;color:var(--text2);padding:4px 0;"><span style="color:var(--blue);font-weight:700;flex-shrink:0;">→</span>${d}</div>`).join('')}
+      </div>
+      <div class="doc-alert-b" style="margin-top:10px;">📍 Apply to the French Consulate that covers your <strong>state of legal US residence</strong>.</div>
+    </div>
+  </div>`;
+}
+
+function setBio(val) {
+  bioSelected = val;
+  document.getElementById('bioYes').className = 'bio-btn' + (val==='yes' ? ' selected-yes' : '');
+  document.getElementById('bioNo').className = 'bio-btn' + (val==='no' ? ' selected-no' : '');
+  const ry = document.getElementById('bioResultYes'), rn = document.getElementById('bioResultNo');
+  if (ry) ry.className = 'bio-result bio-result-yes' + (val==='yes' ? ' show' : '');
+  if (rn) rn.className = 'bio-result bio-result-no' + (val==='no' ? ' show' : '');
+}
+
+/* ── STEP 5 (VISA) ── */
+function renderStep5(el) {
+  el.innerHTML = `
+  <div class="g2">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Standard Timeline</div>
+      <div style="padding-left:24px;position:relative;">
+        <div style="position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--green),var(--blue),#e2e8f0);border-radius:2px;"></div>
+        ${[{dot:'var(--green)',t:'Application submitted',r:'Day 0'},{dot:'var(--green)',t:'Biometrics enrolled',r:'Day 0–1'},{dot:'var(--blue)',t:'Document verification',r:'Day 1–3',n:'Consulate checks file completeness'},{dot:'#94a3b8',t:'Consulate assessment',r:'Day 3–12',n:'Officer evaluates; may request additional docs'},{dot:'var(--gold)',t:'Decision made',r:'Day 10–15'},{dot:'#94a3b8',t:'Passport returned',r:'Day 12–18'}].map(item=>`<div style="position:relative;margin-bottom:14px;"><div style="position:absolute;left:-18px;top:4px;width:12px;height:12px;border-radius:50%;background:${item.dot};border:2px solid #fff;box-shadow:0 0 0 2px ${item.dot};"></div><div style="font-size:13px;font-weight:600;color:var(--text);">${item.t}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${item.r}</div>${item.n?`<div style="font-size:11px;color:var(--text2);margin-top:1px;">${item.n}</div>`:''}</div>`).join('')}
+      </div>
+      <div class="doc-alert-a" style="margin-top:4px;">⚠️ Do NOT book non-refundable flights until visa is in hand. Peak season (Jun–Aug) can take 20+ working days.</div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">During Processing</div>
+      ${[['📧','Monitor your email closely','The consulate may request additional documents. Respond within 1–2 business days to avoid delays or rejection.'],['📞','Keep your phone available','Some consulates contact applicants by phone to request clarifications or follow-up appointments.'],['📋','Do not modify submitted docs','Do not change travel dates, hotel bookings, or insurance after submission without informing the consulate.'],['⏰','Respond promptly','Any delay in responding to consulate requests can result in your file being closed without a decision.']].map(([ico,t,d])=>`<div style="background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;"><span style="font-size:18px;flex-shrink:0;">${ico}</span><div><div style="font-size:13px;font-weight:700;color:var(--text);">${t}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">${d}</div></div></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ── STEP 6 (VISA) ── */
+function renderStep6(el) {
+  el.innerHTML = `
+  <div class="g2">
+    <div style="background:var(--green-soft);border:1.5px solid var(--green-bdr);border-radius:13px;padding:16px;">
+      <div style="font-size:15px;font-weight:700;color:#065f46;margin-bottom:12px;">✅ Visa Approved — Next Steps</div>
+      ${['Collect passport from the consulate or via courier','Check visa dates, type, and number of entries carefully','Confirm travel insurance covers the full visa validity period','Enter the Schengen zone within the visa validity window','Carry your insurance certificate every day of travel','Do not exceed the 90-day limit within any 180-day period'].map(d=>`<div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#166534;margin-bottom:6px;line-height:1.45;"><span style="color:var(--green);font-weight:700;flex-shrink:0;">→</span>${d}</div>`).join('')}
+      <div style="margin-top:14px;font-size:11px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">Verify on Your Visa Sticker:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        ${[['Valid from/until','Dates must match your trip'],['Duration','Max 90 days'],['Number of entries','Single, double, or multiple'],['Territory','"States" = all Schengen'],['Visa category','Type C = short stay'],['Issued by','Country of main destination']].map(([k,v])=>`<div style="background:#fff;border:1px solid var(--green-bdr);border-radius:7px;padding:7px 9px;"><div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.04em;">${k}</div><div style="font-size:11px;color:#166534;margin-top:1px;">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <div style="background:var(--red-soft);border:1.5px solid var(--red-bdr);border-radius:13px;padding:16px;">
+      <div style="font-size:15px;font-weight:700;color:#7f1d1d;margin-bottom:12px;">⚠️ Visa Refused — Your Options</div>
+      ${['Read the refusal letter carefully — reason must be stated by law','File an appeal within 1 month to the issuing consulate if applicable','Reapply with stronger documents addressing rejection reasons','Consult our visa expert before submitting a fresh application','Refusal fee is non-refundable — address the root cause first','A single refusal does not permanently bar future applications'].map(d=>`<div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#991b1b;margin-bottom:6px;line-height:1.45;"><span style="color:var(--red);font-weight:700;flex-shrink:0;">→</span>${d}</div>`).join('')}
+      <div class="doc-alert-a" style="margin-top:12px;">For OPT or status-related rejections, or multiple refusals, consult an immigration attorney before reapplying.</div>
+    </div>
+  </div>`;
+}
+
+/* ══ MAP ══ */
+function initMap() {
+  if (!window.L) { setTimeout(initMap, 500); return; }
+  const mapEl = document.getElementById("consulateMap");
+  if (!mapEl) return;
+  if (mapInited && mapInstance) { mapInstance.invalidateSize(); return; }
+  if (mapInited) return;
+  mapInited = true;
+  mapEl.style.height = '260px';
+  mapInstance = L.map("consulateMap", {center:[38.5,-96],zoom:4,zoomControl:true,scrollWheelZoom:false});
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap © CartoDB",subdomains:"abcd",maxZoom:19}).addTo(mapInstance);
+  mapMarkers = [];
+  CONSULATES.forEach((c,i) => {
+    const icon = L.divIcon({
+      html:`<div style="background:#1a56db;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:13px;">${c.icon}</div>`,
+      className:"",iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-18]
+    });
+    const marker = L.marker([c.lat,c.lng],{icon}).addTo(mapInstance);
+    marker.bindPopup(`<strong style="font-size:12px;">${c.icon} ${c.city}</strong><br><span style="font-size:11px;color:#64748b;">${c.addr}</span>`,{maxWidth:240});
+    marker.on("click",() => { setActiveCC(i); scrollToCard(i); });
+    mapMarkers.push({marker,c,index:i});
+  });
+  renderSidebar(CONSULATES);
+  setTimeout(() => { if (mapInstance) mapInstance.invalidateSize(); }, 300);
+}
+
+function setActiveCC(idx) {
+  activeCard = idx;
+  document.querySelectorAll(".cc-card").forEach((el,i) => el.classList.toggle("active",i===idx));
+}
+function scrollToCard(idx) {
+  const sb = document.getElementById("mapSidebar"); if (!sb) return;
+  const cards = sb.querySelectorAll(".cc-card");
+  if (cards[idx]) cards[idx].scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function renderSidebar(list) {
+  const sb = document.getElementById("mapSidebar"); if (!sb) return;
+  sb.innerHTML = list.map(c => {
+    const gi = CONSULATES.indexOf(c);
+    return `<div class="cc-card${activeCard===gi?" active":""}" onclick="clickCC(${gi})"><div class="cc-ico">${c.icon}</div><div style="flex:1;min-width:0;"><div class="cc-city">${c.city}</div><div class="cc-state">${c.state}</div><div class="cc-addr">${c.addr}</div><div class="cc-hours"><div class="cc-dot"></div>${c.hours}</div></div></div>`;
+  }).join("");
+}
+function filterMap(region, btn) {
+  if (!mapInstance) return;
+  document.querySelectorAll(".mpill").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  const filtered = CONSULATES.filter(c => region==='all' || c.region===region);
+  mapMarkers.forEach(({marker,c}) => {
+    if (region==='all'||c.region===region) { if (!mapInstance.hasLayer(marker)) marker.addTo(mapInstance); }
+    else if (mapInstance.hasLayer(marker)) mapInstance.removeLayer(marker);
+  });
+  if (filtered.length > 0) mapInstance.fitBounds(L.latLngBounds(filtered.map(c=>[c.lat,c.lng])),{padding:[40,40]});
+  const el = document.getElementById("mapCount");
+  if (el) el.textContent = filtered.length===CONSULATES.length ? "Showing all 8 consulates" : `Showing ${filtered.length} consulate${filtered.length!==1?"s":""}`;
+  renderSidebar(filtered);
+  setTimeout(() => { if (mapInstance) mapInstance.invalidateSize(); }, 200);
+}
+function clickCC(gi) {
+  if (!mapInstance||!mapMarkers[gi]) return;
+  setActiveCC(gi);
+  mapInstance.setView([CONSULATES[gi].lat,CONSULATES[gi].lng],11,{animate:true});
+  mapMarkers[gi].marker.openPopup();
+}
+</script>
+</body>
+</html>
